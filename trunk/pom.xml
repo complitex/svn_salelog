@@ -37,6 +37,8 @@
         <module>../complitex/complitex-logging</module>
         <module>../complitex/complitex-resources</module>
         <module>../complitex/complitex-images</module>
+        <module>../complitex/complitex-organization-type</module>
+        <module>../complitex/complitex-organization</module>
     </modules>
 
     <distributionManagement>
@@ -76,6 +78,16 @@
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-logging</artifactId>
+                <version>${complitex.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.complitex</groupId>
+                <artifactId>complitex-organization</artifactId>
+                <version>${complitex.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.complitex</groupId>
+                <artifactId>complitex-organization-type</artifactId>
                 <version>${complitex.version}</version>
             </dependency>
             <dependency>
