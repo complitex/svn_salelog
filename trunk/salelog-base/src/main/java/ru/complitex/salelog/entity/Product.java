@@ -1,5 +1,7 @@
 package ru.complitex.salelog.entity;
 
+import org.complitex.dictionary.entity.DictionaryObject;
+
 import java.math.BigDecimal;
 
 /**
