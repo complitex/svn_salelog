@@ -1,6 +1,6 @@
 package ru.complitex.salelog.order.entity;
 
-import ru.complitex.salelog.entity.DictionaryTemporalObject;
+import org.complitex.dictionary.entity.DictionaryTemporalObject;
 import ru.complitex.salelog.entity.Product;
 
 import java.math.BigDecimal;
@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 public class ProductSale extends DictionaryTemporalObject {
     private Product product;
     private int count;
+    private BigDecimal price;
     private BigDecimal totalCost;
 
     public Product getProduct() {
@@ -27,6 +28,14 @@ public class ProductSale extends DictionaryTemporalObject {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public BigDecimal getTotalCost() {
