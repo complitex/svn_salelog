@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ru.complitex.salelog.service.ProductBean">
+
+    <resultMap id="Product" type="ru.complitex.salelog.entity.Product">
+        <id column="id" property="id"/>
+        <id column="code" property="code"/>
+        <id column="name" property="name"/>
+        <id column="price" property="price"/>
+    </resultMap>
+
+    <sql id="productColumns">
+        `id`, `code`, `name`, `price`
+    </sql>
+
+    <sql id="productCondition">
+        <if test="object != null">
+            <if test="object.id != null">
+                and `id` = #{object.id}
+            </if>
+
+            <if test="object.code != null">
+                and `code` = #{object.code}
+            </if>
+
+            <if test="object.name != null">
+                <choose>
+                    <when test="like">
+                        and `name` like concat('%', #{object.name}, '%')
+                    </when>
+                    <otherwise>
+                        and `name` = #{object.name}
+                    </otherwise>
+                </choose>
+            </if>
+        </if>
+    </sql>
+
+    <select id="selectProducts" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultMap="Product">
+        select
+        <include refid="productColumns"/>
+
+        from `product`
+
+        where 1=1
+        <include refid="productCondition"/>
+
+        <if test="sortProperty != null">
+            order by ${sortProperty}
+            <if test="asc">
+                ${asc}
+            </if>
+        </if>
+        <if test="count > 0">
+            limit ${first},${count}
+        </if>
+    </select>
+
+    <select id="countProducts" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="integer">
+        select count(distinct `id`) from `product`
+        where 1=1
+        <include refid="productCondition"/>
+    </select>
+
+    <select id="selectProduct" parameterType="long" resultMap="Product">
+        select
+        <include refid="productColumns"/>
+        from `product`
+        where `id` = #{id}
+    </select>
+
+    <insert id="insertProduct"
+            parameterType="ru.complitex.salelog.entity.Product" keyProperty="id" useGeneratedKeys="true">
+        insert into `product` (`code`, `name`, `price`)
+                            values (#{code}, #{name}, #{price})
+    </insert>
+
+    <update id="updateProduct"
+            parameterType="ru.complitex.salelog.entity.Product">
+        update `product` set `code` = #{code}, `name` = #{name}, `price` = #{price}
+                            where `id` = #{id}
+    </update>
+
+</mapper>

@@ -12,7 +12,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
-import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
 import org.slf4j.Logger;
@@ -100,10 +99,6 @@ public class CallGirlEdit extends FormTemplatePage {
             }
         };
         form.add(cancel);
-    }
-
-    private boolean isNullAddressInput(DomainObject addressInput) {
-        return addressInput == null || addressInput.getId() == -1;
     }
 
 }
