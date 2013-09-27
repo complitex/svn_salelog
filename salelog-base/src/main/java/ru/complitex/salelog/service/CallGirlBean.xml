@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ru.complitex.salelog.service.CallGirlBean">
+
+    <resultMap id="CallGirl" type="ru.complitex.salelog.entity.CallGirl">
+        <id column="id" property="id"/>
+        <id column="code" property="code"/>
+
+        <association property="person" resultMap="org.complitex.dictionary.service.PersonBean.Person"/>
+    </resultMap>
+
+    <sql id="callGirlColumns">
+        `id`, `code`, `first_name`, `last_name`, `middle_name`
+    </sql>
+
+    <sql id="callGirlCondition">
+        <if test="object != null">
+            <if test="object.id != null">
+                and `id` = #{object.id}
+            </if>
+
+            <if test="object.code != null">
+                and `code` = #{object.code}
+            </if>
+
+            <if test="object.person != null">
+                <if test="object.person.lastName != null">
+                    and `last_name` like concat('%', #{object.person.lastName}, '%')
+                </if>
+                <if test="object.person.firstName != null">
+                    and `first_name` like concat('%', #{object.person.firstName}, '%')
+                </if>
+                <if test="object.person.middleName != null">
+                    and `middle_name` like concat('%', #{object.person.middleName}, '%')
+                </if>
+            </if>
+        </if>
+    </sql>
+
+    <select id="selectCallGirls" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultMap="CallGirl">
+        select
+        <include refid="callGirlColumns"/>
+
+        from `call_girl`
+
+        where 1=1
+        <include refid="callGirlCondition"/>
+
+        <if test="sortProperty != null">
+            order by
+            <choose>
+                <when test="sortProperty == 'person'">
+                    `last_name`
+                    <if test="asc">
+                        ${asc}
+                    </if>,
+                    `first_name`
+                    <if test="asc">
+                        ${asc}
+                    </if>,
+                    `middle_name`
+                </when>
+
+                <otherwise>
+                    ${sortProperty}
+                </otherwise>
+            </choose>
+            <if test="asc">
+                ${asc}
+            </if>
+        </if>
+        <if test="count > 0">
+            limit ${first},${count}
+        </if>
+    </select>
+
+    <select id="countCallGirls" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="integer">
+        select count(distinct `id`) from `call_girl`
+        where 1=1
+        <include refid="callGirlCondition"/>
+    </select>
+
+    <select id="selectCallGirl" parameterType="long" resultMap="CallGirl">
+        select
+        <include refid="callGirlColumns"/>
+        from `call_girl`
+        where `id` = #{id}
+    </select>
+
+    <insert id="insertCallGirl"
+            parameterType="ru.complitex.salelog.entity.CallGirl" keyProperty="id" useGeneratedKeys="true">
+        insert into `call_girl` (`code`, `first_name`, `last_name`, `middle_name`)
+                            values (#{code}, #{person.firstName}, #{person.lastName}, #{person.middleName})
+    </insert>
+
+    <update id="updateCallGirl"
+            parameterType="ru.complitex.salelog.entity.CallGirl">
+        update `call_girl` set `code` = #{code}
+        <choose>
+            <when test="person == null">
+                , `first_name` = null, `last_name` = null, `middle_name` = null
+            </when>
+            <otherwise>
+                , `first_name` = #{person.firstName}, `last_name` = #{person.lastName}, `middle_name` = #{person.middleName}
+            </otherwise>
+        </choose>
+        where `id` = #{id}
+    </update>
+
+</mapper>

@@ -19,7 +19,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>EIRC</name>
+    <name>Salelog</name>
 
     <scm>
         <connection>scm:svn:https://salelog.googlecode.com/svn/trunk</connection>
