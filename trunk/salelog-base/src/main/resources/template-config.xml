@@ -2,6 +2,7 @@
 <template xmlns="http://www.complitex.org/web/template">
     <sidebar>
         <menu class="org.complitex.admin.web.AdminTemplateMenu"/>
+        <menu class="ru.complitex.salelog.web.SalelogTemplateMenu"/>
         <menu class="org.complitex.address.menu.AddressMenu"/>
         <menu class="org.complitex.organization.web.OrganizationMenu"/>
         <menu class="org.complitex.organization_type.menu.OrganizationTypeMenu"/>

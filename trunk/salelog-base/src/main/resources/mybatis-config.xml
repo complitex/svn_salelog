@@ -48,5 +48,7 @@
 
         <mapper resource="org/complitex/organization/strategy/Organization.xml"/>
 
+        <mapper resource="ru/complitex/salelog/service/CallGirlBean.xml"/>
+
     </mappers>
 </configuration>
