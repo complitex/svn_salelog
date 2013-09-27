@@ -8,6 +8,7 @@ import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.ITemplateLink;
 import org.complitex.template.web.template.ResourceTemplateMenu;
 import ru.complitex.salelog.web.list.CallGirlList;
+import ru.complitex.salelog.web.list.ProductList;
 
 import java.util.List;
 import java.util.Locale;
@@ -19,6 +20,7 @@ import java.util.Locale;
 public class SalelogTemplateMenu extends ResourceTemplateMenu {
 
     public static final String CALL_GIRL_ITEM = "call_girl_item";
+    public static final String PRODUCT_ITEM = "product_item";
 
 
     @Override
@@ -48,6 +50,26 @@ public class SalelogTemplateMenu extends ResourceTemplateMenu {
             @Override
             public String getTagId() {
                 return CALL_GIRL_ITEM;
+            }
+        }, new ITemplateLink() {
+            @Override
+            public String getLabel(Locale locale) {
+                return getString(SalelogTemplateMenu.class, locale, "products");
+            }
+
+            @Override
+            public Class<? extends Page> getPage() {
+                return ProductList.class;
+            }
+
+            @Override
+            public PageParameters getParameters() {
+                return new PageParameters();
+            }
+
+            @Override
+            public String getTagId() {
+                return PRODUCT_ITEM;
             }
         });
         return links;
