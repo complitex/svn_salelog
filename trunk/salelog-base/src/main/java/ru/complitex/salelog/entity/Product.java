@@ -13,6 +13,13 @@ public class Product extends DictionaryObject {
     private String name;
     private BigDecimal price;
 
+    public Product() {
+    }
+
+    public Product(String code) {
+        this.code = code;
+    }
+
     public String getCode() {
         return code;
     }
