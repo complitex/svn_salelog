@@ -1,5 +1,6 @@
 package ru.complitex.salelog.web.edit;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -15,6 +16,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.StringValue;
 import org.complitex.dictionary.converter.BigDecimalConverter;
+import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
 import org.slf4j.Logger;
@@ -25,6 +27,7 @@ import ru.complitex.salelog.web.list.ProductList;
 
 import javax.ejb.EJB;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
 
@@ -74,7 +77,7 @@ public class ProductEdit extends FormTemplatePage {
         messages.setOutputMarkupId(true);
         add(messages);
 
-        Form<Product> form = new Form<>("form", formModel);
+        final Form<Product> form = new Form<>("form", formModel);
         add(form);
 
         //eirc account field
@@ -94,6 +97,15 @@ public class ProductEdit extends FormTemplatePage {
 
             @Override
             public void onSubmit() {
+
+                List<Product> products = productBean.getProducts(FilterWrapper.of(new Product(product.getCode())));
+                if (products.size() > 0) {
+                    if (product.getId() == null ||
+                            !products.get(0).getId().equals(product.getId())) {
+                        form.error(MessageFormat.format(getString("error_duplicate_code"), product.getCode()));
+                        return;
+                    }
+                }
 
                 productBean.save(product);
 

@@ -11,6 +11,13 @@ public class CallGirl extends DictionaryObject {
     private String code;
     private Person person = new Person();
 
+    public CallGirl() {
+    }
+
+    public CallGirl(String code) {
+        this.code = code;
+    }
+
     public String getCode() {
         return code;
     }
