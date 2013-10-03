@@ -89,7 +89,7 @@ public class CallGirlList extends TemplatePage {
                 return callGirlBean.count(filterWrapper);
             }
         };
-        dataProvider.setSort("code", SortOrder.ASCENDING);
+        dataProvider.setSort("cg_code", SortOrder.ASCENDING);
 
         //Data View
         DataView<CallGirl> dataView = new DataView<CallGirl>("data", dataProvider, 1) {
@@ -119,7 +119,7 @@ public class CallGirlList extends TemplatePage {
 
         //Sorting
         filterForm.add(newSorting("header.", dataProvider, dataView, filterForm, true,
-                "code", "person"));
+                "cg_code", "cg_person"));
 
         //Filters
         filterForm.add(new TextField<>("code"));

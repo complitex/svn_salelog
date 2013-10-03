@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ru.complitex.salelog.order.service.OrderBean">
+
+    <resultMap id="Order" type="ru.complitex.salelog.order.entity.Order">
+        <id column="order_pk_id" property="pkId"/>
+        <result column="order_object_id" property="id"/>
+        <result column="order_create_date" property="createDate"/>
+        <result column="order_phones" property="phones"/>
+        <result column="order_region_id" property="regionId"/>
+        <result column="order_address" property="address"/>
+        <result column="order_comment" property="comment"/>
+        <result column="order_status_code" property="status" typeHandler="org.complitex.dictionary.mybatis.FixedIdBaseTypeHandler"/>
+        <result column="order_begin_date" property="beginDate"/>
+        <result column="order_end_date" property="endDate"/>
+
+        <association property="customer" columnPrefix="order_" 
+                     resultMap="org.complitex.dictionary.service.PersonBean.Person"/>
+
+        <association property="callGirl" resultMap="ru.complitex.salelog.service.CallGirlBean.CallGirl"/>
+    </resultMap>
+
+    <sql id="orderColumns">
+        o.`pk_id` as `order_pk_id`, o.`object_id` as `order_object_id`, o.`create_date` as `order_create_date`, 
+        o.`first_name` as `order_first_name`, o.`last_name` as `order_last_name`, o.`middle_name` as `order_middle_name`, 
+        o.`phones` as `order_phones`, o.`region_id` as `order_region_id`, o.`address` as `order_address`,
+        o.`comment` as `order_comment`, o.`order_status_code` as `order_status_code`,
+        o.`begin_date` as `order_begin_date`, o.`end_date` as `order_end_date`
+    </sql>
+
+
+    <sql id="orderCondition">
+        <if test="object != null">
+            <if test="object.id != null">
+                and o.`object_id` = #{object.id}
+            </if>
+
+            <if test="object.createDate != null">
+                and o.`create_date` = #{object.createDate}
+            </if>
+
+            <if test="object.customer != null">
+                <if test="object.customer.lastName != null">
+                    and o.`last_name` like concat('%', #{object.customer.lastName}, '%')
+                </if>
+                <if test="object.customer.firstName != null">
+                    and o.`first_name` like concat('%', #{object.customer.firstName}, '%')
+                </if>
+                <if test="object.customer.middleName != null">
+                    and o.`middle_name` like concat('%', #{object.customer.middleName}, '%')
+                </if>
+            </if>
+
+            <if test="object.phones != null">
+                and o.`phones` like concat('%', #{object.phones}, '%')
+            </if>
+
+            <if test="object.address != null">
+                and o.`address` like concat('%', #{object.address}, '%')
+            </if>
+
+            <if test="object.regionId != null">
+                and o.`region_id` = #{object.regionId}
+            </if>
+
+            <if test="object.comment != null">
+                and o.`comment` like concat('%', #{object.comment}, '%')
+            </if>
+
+            <if test="object.status != null">
+                and o.`order_status_code` = #{object.status.id}
+            </if>
+
+            <if test="object.callGirl != null">
+
+                <if test="object.callGirl.id != null">
+                    and cg.`id` = #{object.callGirl.id}
+                </if>
+
+                <if test="object.callGirl.code != null">
+                    and cg.`code` = #{object.callGirl.code}
+                </if>
+
+                <if test="object.callGirl.person != null">
+                    <if test="object.callGirl.person.lastName != null">
+                        and cg.`last_name` like concat('%', #{object.callGirl.person.lastName}, '%')
+                    </if>
+                    <if test="object.callGirl.person.firstName != null">
+                        and cg.`first_name` like concat('%', #{object.callGirl.person.firstName}, '%')
+                    </if>
+                    <if test="object.callGirl.person.middleName != null">
+                        and cg.`middle_name` like concat('%', #{object.callGirl.person.middleName}, '%')
+                    </if>
+                </if>
+            </if>
+        </if>
+    </sql>
+
+    <select id="selectOrders" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultMap="Order">
+
+        select
+        <include refid="orderColumns"/>,
+        <include refid="ru.complitex.salelog.service.CallGirlBean.callGirlColumns"/>
+
+        from `order` o
+        left join `call_girl` cg on o.`call_girl_id` = cg.`id`
+
+        where o.`end_date` is null
+        <include refid="orderCondition"/>
+
+        <if test="sortProperty != null">
+            order by
+            <choose>
+                <when test="sortProperty == 'order_customer'">
+                    `order_last_name`
+                    <if test="asc">
+                        ${asc}
+                    </if>,
+                    `order_first_name`
+                    <if test="asc">
+                        ${asc}
+                    </if>,
+                    `order_middle_name`
+                </when>
+
+                <when test="sortProperty == 'cg_person'">
+                    `cg_last_name`
+                    <if test="asc">
+                        ${asc}
+                    </if>,
+                    `cg_first_name`
+                    <if test="asc">
+                        ${asc}
+                    </if>,
+                    `cg_middle_name`
+                </when>
+
+                <otherwise>
+                    ${sortProperty}
+                </otherwise>
+            </choose>
+            <if test="asc">
+                ${asc}
+            </if>
+        </if>
+        <if test="count > 0">
+            limit ${first},${count}
+        </if>
+    </select>
+
+    <select id="countOrders" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="integer">
+        select count(distinct o.`object_id`) from `order` o
+        left join `call_girl` cg on o.`call_girl_id` = cg.`id`
+        where o.`end_date` is null
+        <include refid="orderCondition"/>
+    </select>
+
+    <select id="selectOrderById" parameterType="long" resultMap="Order">
+        select
+        <include refid="orderColumns"/>
+        from `order` o
+        left join `call_girl` cg on o.`call_girl_id` = cg.`id`
+        where o.`object_id` = #{id} order by o.`begin_date` desc
+    </select>
+
+    <select id="selectOrderByPkId" parameterType="long" resultMap="Order">
+        select
+        <include refid="orderColumns"/>
+        from `order` o
+        left join `call_girl` cg on o.`call_girl_id` = cg.`id`
+        where o.`pk_id` = #{pkId}
+    </select>
+
+    <insert id="insertOrder"
+            parameterType="ru.complitex.salelog.order.entity.Order" keyProperty="pkId" useGeneratedKeys="true">
+        insert into `order` (`object_id`, `call_girl_id`, `create_date`, `first_name`, `last_name`, `middle_name`,
+        `phones`, `region_id`, `address`, `comment`, `order_status_code`, `begin_date`, `end_date`)
+                            values (#{id}, #{callGirl.id}, #{createDate}, #{customer.firstName}, #{customer.lastName}, #{customer.middleName},
+                            #{phones}, #{regionId}, #{address}, #{comment}, #{status.id}, #{beginDate}, #{endDate})
+    </insert>
+
+    <update id="updateOrderEndDate"
+            parameterType="ru.complitex.salelog.order.entity.Order">
+        update `order` set `end_date` = #{endDate} where `pk_id` = #{pkId}
+    </update>
+
+</mapper>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:wicket>
+<head>
+    <wicket:head>
+        <title wicket:id="title"></title>
+    </wicket:head>
+</head>
+<body>
+<wicket:extend>
+    <h2 wicket:id="label"></h2>
+
+    <div wicket:id="messages"></div>
+
+    <div wicket:id="container">
+        <form action="#" wicket:id="filterForm">
+            <table class="tbColor bookContent" cellpadding="0" cellspacing="0" border="0">
+                <thead>
+                <tr>
+                    <th>
+                        <span wicket:id="header.order_object_id">
+                            <wicket:message key="id"/>
+                        </span>
+                    </th>
+                    <th>
+                        <span wicket:id="header.order_create_date">
+                            <wicket:message key="create_date"/>
+                        </span>
+                    </th>
+                    <th>
+                        <span wicket:id="header.cg_code">
+                            <wicket:message key="call_girl_code"/>
+                        </span>
+                    </th>
+                    <th>
+                        <span wicket:id="header.order_customer">
+                            <wicket:message key="customer"/>
+                        </span>
+                    </th>
+                    <th>
+                        <span wicket:id="header.order_phones">
+                            <wicket:message key="phones"/>
+                        </span>
+                    </th>
+                    <th>
+                        <span wicket:id="header.order_region_id">
+                            <wicket:message key="region"/>
+                        </span>
+                    </th>
+                    <th>
+                        <span wicket:id="header.order_address">
+                            <wicket:message key="address"/>
+                        </span>
+                    </th>
+                    <th>
+                        <span wicket:id="header.order_comment">
+                            <wicket:message key="comment"/>
+                        </span>
+                    </th>
+                    <th>
+                        <span wicket:id="header.order_status_code">
+                            <wicket:message key="status"/>
+                        </span>
+                    </th>
+                    <th style="width:110px">
+                        <input wicket:id="reset" type="button" wicket:message="value:reset" class="btnSmall"/>
+                    </th>
+                </tr>
+                <tr>
+                    <td class="filter-td"></td>
+                    <td class="filter-td">
+                        <div style="width:102px">
+                            <input type="text" wicket:id="createDate" style="width: 80px"/>
+                        </div>
+                    </td>
+                    <td class="filter-td">
+                        <input type="text" wicket:id="callGirlCode"></input>
+                    </td>
+                    <td class="filter-td">
+                        <input type="text" wicket:id="customer"></input>
+                    </td>
+                    <td class="filter-td">
+                        <input type="text" wicket:id="phones"></input>
+                    </td>
+                    <td class="filter-td">
+                        <select wicket:id="region"/>
+                    </td>
+                    <td class="filter-td">
+                        <input type="text" wicket:id="address"></input>
+                    </td>
+                    <td class="filter-td">
+                        <input type="text" wicket:id="comment"></input>
+                    </td>
+                    <td class="filter-td">
+                        <select wicket:id="status"/>
+                    </td>
+                    <td class="filter-td">
+                        <input wicket:id="submit" type="submit" wicket:message="value:find" class="btnSmall"/>
+                    </td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr wicket:id="data">
+                    <td>
+                        <span wicket:id="id"></span>
+                    </td>
+                    <td>
+                        <span wicket:id="createDate"></span>
+                    </td>
+                    <td>
+                        <span wicket:id="callGirlCode"></span>
+                    </td>
+                    <td>
+                        <span wicket:id="customer"></span>
+                    </td>
+                    <td>
+                        <span wicket:id="phones"></span>
+                    </td>
+                    <td>
+                        <span wicket:id="region"></span>
+                    </td>
+                    <td>
+                        <span wicket:id="address"></span>
+                    </td>
+                    <td>
+                        <span wicket:id="comment"></span>
+                    </td>
+                    <td>
+                        <span wicket:id="status"></span>
+                    </td>
+                    <td>
+                        <a wicket:id="detailsLink">
+                            <span wicket:id="editMessage"></span>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+        <div wicket:id="navigator"></div>
+    </div>
+</wicket:extend>
+</body>
+</html>

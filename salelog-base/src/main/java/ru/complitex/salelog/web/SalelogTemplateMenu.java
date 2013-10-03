@@ -7,6 +7,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.ITemplateLink;
 import org.complitex.template.web.template.ResourceTemplateMenu;
+import ru.complitex.salelog.order.web.list.OrderList;
 import ru.complitex.salelog.web.list.CallGirlList;
 import ru.complitex.salelog.web.list.ProductList;
 
@@ -21,6 +22,7 @@ public class SalelogTemplateMenu extends ResourceTemplateMenu {
 
     public static final String CALL_GIRL_ITEM = "call_girl_item";
     public static final String PRODUCT_ITEM = "product_item";
+    public static final String ORDER_ITEM = "order_item";
 
 
     @Override
@@ -70,6 +72,26 @@ public class SalelogTemplateMenu extends ResourceTemplateMenu {
             @Override
             public String getTagId() {
                 return PRODUCT_ITEM;
+            }
+        }, new ITemplateLink() {
+            @Override
+            public String getLabel(Locale locale) {
+                return getString(SalelogTemplateMenu.class, locale, "orders");
+            }
+
+            @Override
+            public Class<? extends Page> getPage() {
+                return OrderList.class;
+            }
+
+            @Override
+            public PageParameters getParameters() {
+                return new PageParameters();
+            }
+
+            @Override
+            public String getTagId() {
+                return ORDER_ITEM;
             }
         });
         return links;

@@ -1,6 +1,5 @@
 package ru.complitex.salelog.web.edit;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -11,6 +10,7 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
@@ -29,7 +29,6 @@ import javax.ejb.EJB;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * @author Pavel Sknar
@@ -83,14 +82,14 @@ public class ProductEdit extends FormTemplatePage {
         //eirc account field
         form.add(new TextField<>("code").setRequired(true));
         form.add(new TextField<>("name").setRequired(true));
-        form.add(new NumberTextField<BigDecimal>("price") {
+        form.add(new NumberTextField<BigDecimal>("price", new PropertyModel<BigDecimal>(product, "price"), BigDecimal.class) {
             @SuppressWarnings("unchecked")
             @Override
             public <C> IConverter<C> getConverter(Class<C> type) {
                 return (IConverter<C>) converter;
             }
 
-        }.setMinimum(BigDecimal.ZERO).setMaximum(new BigDecimal(Double.MAX_VALUE)).setRequired(true));
+        }.setMinimum(BigDecimal.ZERO).setMaximum(new BigDecimal(Integer.MAX_VALUE)).setRequired(true));
 
         // save button
         Button save = new Button("save") {
