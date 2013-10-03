@@ -5,9 +5,9 @@
 
     <resultMap id="Product" type="ru.complitex.salelog.entity.Product">
         <id column="id" property="id"/>
-        <id column="code" property="code"/>
-        <id column="name" property="name"/>
-        <id column="price" property="price"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="price" property="price"/>
     </resultMap>
 
     <sql id="productColumns">

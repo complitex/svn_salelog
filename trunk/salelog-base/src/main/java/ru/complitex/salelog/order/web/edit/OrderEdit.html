@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:wicket>
+<head>
+    <wicket:head>
+        <title wicket:id="title"></title>
+    </wicket:head>
+</head>
+<body>
+<wicket:extend>
+    <h2 wicket:id="label"></h2>
+
+    <div wicket:id="messages"></div>
+
+    <form action="#" wicket:id="form">
+        <table class="tbForm">
+            <tr>
+                <th>
+                    <wicket:message key="callGirlCode"/> <b class="blue">*</b>
+                    :
+                </th>
+                <td>
+                    <select wicket:id="callGirlCode"/>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <wicket:message key="customer"/>
+                    :
+                </th>
+                <td>
+                    <table cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                            <td align="center">
+                                <wicket:message key="lastName"/> <b class="blue">*</b>
+                            </td>
+                            <td align="center">
+                                <wicket:message key="firstName"/> <b class="blue">*</b>
+                            </td>
+                            <td align="center">
+                                <wicket:message key="middleName"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" wicket:id="lastName"></input>
+                            </td>
+                            <td>
+                                <input type="text" wicket:id="firstName"></input>
+                            </td>
+                            <td>
+                                <input type="text" wicket:id="middleName"></input>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <wicket:message key="phones"/> <b class="blue">*</b>
+                    :
+                </th>
+                <td>
+                    <input type="text" wicket:id="phones" style="width: 80px"/>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <wicket:message key="address"/> <b class="blue">*</b>
+                    :
+                </th>
+                <td>
+                    <input type="text" wicket:id="address" style="width: 80px"/>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <wicket:message key="region"/> <b class="blue">*</b>
+                    :
+                </th>
+                <td>
+                    <select wicket:id="region"/>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <wicket:message key="comment"/>
+                    :
+                </th>
+                <td>
+                    <input type="text" wicket:id="comment" style="width: 80px"/>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <wicket:message key="status"/> <b class="blue">*</b>
+                    :
+                </th>
+                <td>
+                    <select wicket:id="status"/>
+                </td>
+            </tr>
+        </table>
+        <div>
+            <input type="submit" wicket:message="value:save" wicket:id="save" class="btnMiddle"/>
+            <input type="button" wicket:message="value:cancel" wicket:id="cancel" class="btnMiddle"/>
+        </div>
+    </form>
+</wicket:extend>
+</body>
+</html>

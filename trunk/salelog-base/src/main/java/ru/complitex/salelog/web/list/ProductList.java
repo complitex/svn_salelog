@@ -16,7 +16,10 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.model.*;
+import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.complitex.dictionary.converter.BigDecimalConverter;
@@ -136,7 +139,7 @@ public class ProductList extends TemplatePage {
             public <C> IConverter<C> getConverter(Class<C> type) {
                 return (IConverter<C>)converter;
             }
-        }.setMinimum(BigDecimal.ZERO).setMaximum(new BigDecimal(Double.MAX_VALUE)));
+        }.setMinimum(BigDecimal.ZERO).setMaximum(new BigDecimal(Integer.MAX_VALUE)));
 
         //Reset Action
         AjaxLink reset = new AjaxLink("reset") {

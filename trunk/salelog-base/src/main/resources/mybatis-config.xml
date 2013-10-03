@@ -50,6 +50,7 @@
 
         <mapper resource="ru/complitex/salelog/service/CallGirlBean.xml"/>
         <mapper resource="ru/complitex/salelog/service/ProductBean.xml"/>
+        <mapper resource="ru/complitex/salelog/order/service/OrderBean.xml"/>
 
     </mappers>
 </configuration>

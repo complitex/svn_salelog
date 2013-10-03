@@ -4,35 +4,35 @@
 <mapper namespace="ru.complitex.salelog.service.CallGirlBean">
 
     <resultMap id="CallGirl" type="ru.complitex.salelog.entity.CallGirl">
-        <id column="id" property="id"/>
-        <id column="code" property="code"/>
+        <id column="cg_id" property="id"/>
+        <result column="cg_code" property="code"/>
 
-        <association property="person" resultMap="org.complitex.dictionary.service.PersonBean.Person"/>
+        <association property="person" columnPrefix="cg_" resultMap="org.complitex.dictionary.service.PersonBean.Person"/>
     </resultMap>
 
     <sql id="callGirlColumns">
-        `id`, `code`, `first_name`, `last_name`, `middle_name`
+        cg.`id` as `cg_id`, cg.`code` as `cg_code`, cg.`first_name` as `cg_first_name`, cg.`last_name` as `cg_last_name`, cg.`middle_name` as `cg_middle_name`
     </sql>
 
     <sql id="callGirlCondition">
         <if test="object != null">
             <if test="object.id != null">
-                and `id` = #{object.id}
+                and cg.`id` = #{object.id}
             </if>
 
             <if test="object.code != null">
-                and `code` = #{object.code}
+                and cg.`code` = #{object.code}
             </if>
 
             <if test="object.person != null">
                 <if test="object.person.lastName != null">
-                    and `last_name` like concat('%', #{object.person.lastName}, '%')
+                    and cg.`last_name` like concat('%', #{object.person.lastName}, '%')
                 </if>
                 <if test="object.person.firstName != null">
-                    and `first_name` like concat('%', #{object.person.firstName}, '%')
+                    and cg.`first_name` like concat('%', #{object.person.firstName}, '%')
                 </if>
                 <if test="object.person.middleName != null">
-                    and `middle_name` like concat('%', #{object.person.middleName}, '%')
+                    and cg.`middle_name` like concat('%', #{object.person.middleName}, '%')
                 </if>
             </if>
         </if>
@@ -43,7 +43,7 @@
         select
         <include refid="callGirlColumns"/>
 
-        from `call_girl`
+        from `call_girl` cg
 
         where 1=1
         <include refid="callGirlCondition"/>
@@ -51,16 +51,16 @@
         <if test="sortProperty != null">
             order by
             <choose>
-                <when test="sortProperty == 'person'">
-                    `last_name`
+                <when test="sortProperty == 'cg_person'">
+                    `cg_last_name`
                     <if test="asc">
                         ${asc}
                     </if>,
-                    `first_name`
+                    `cg_first_name`
                     <if test="asc">
                         ${asc}
                     </if>,
-                    `middle_name`
+                    `cg_middle_name`
                 </when>
 
                 <otherwise>
@@ -77,7 +77,7 @@
     </select>
 
     <select id="countCallGirls" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="integer">
-        select count(distinct `id`) from `call_girl`
+        select count(distinct cg.`id`) from `call_girl` cg
         where 1=1
         <include refid="callGirlCondition"/>
     </select>
@@ -85,8 +85,8 @@
     <select id="selectCallGirl" parameterType="long" resultMap="CallGirl">
         select
         <include refid="callGirlColumns"/>
-        from `call_girl`
-        where `id` = #{id}
+        from `call_girl` cg
+        where cg.`id` = #{id}
     </select>
 
     <insert id="insertCallGirl"
