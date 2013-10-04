@@ -62,6 +62,18 @@
                             <wicket:message key="status"/>
                         </span>
                     </th>
+                    <th>
+                        <wicket:message key="product_code"/>
+                    </th>
+                    <th>
+                        <wicket:message key="count"/>
+                    </th>
+                    <th>
+                        <wicket:message key="price"/>
+                    </th>
+                    <th>
+                        <wicket:message key="total_cost"/>
+                    </th>
                     <th style="width:110px">
                         <input wicket:id="reset" type="button" wicket:message="value:reset" class="btnSmall"/>
                     </th>
@@ -94,6 +106,10 @@
                     <td class="filter-td">
                         <select wicket:id="status"/>
                     </td>
+                    <td class="filter-td"></td>
+                    <td class="filter-td"></td>
+                    <td class="filter-td"></td>
+                    <td class="filter-td"></td>
                     <td class="filter-td">
                         <input wicket:id="submit" type="submit" wicket:message="value:find" class="btnSmall"/>
                     </td>
@@ -127,6 +143,50 @@
                     </td>
                     <td>
                         <span wicket:id="status"></span>
+                    </td>
+                    <td>
+                        <table>
+                            <div wicket:id="productCodeView">
+                                <tr>
+                                    <td>
+                                        <span wicket:id="productCode"></span>
+                                    </td>
+                                </tr>
+                            </div>
+                        </table>
+                    </td>
+                    <td>
+                        <table>
+                            <div wicket:id="priceView">
+                                <tr>
+                                    <td>
+                                        <span wicket:id="price"></span>
+                                    </td>
+                                </tr>
+                            </div>
+                        </table>
+                    </td>
+                    <td>
+                        <table>
+                            <div wicket:id="countView">
+                                <tr>
+                                    <td>
+                                        <span wicket:id="count"></span>
+                                    </td>
+                                </tr>
+                            </div>
+                        </table>
+                    </td>
+                    <td>
+                        <table>
+                            <div wicket:id="totalCostView">
+                                <tr>
+                                    <td>
+                                        <span wicket:id="totalCost"></span>
+                                    </td>
+                                </tr>
+                            </div>
+                        </table>
                     </td>
                     <td>
                         <a wicket:id="detailsLink">
