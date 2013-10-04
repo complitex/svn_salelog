@@ -120,15 +120,12 @@
     <select id="selectOrders" parameterType="org.complitex.dictionary.entity.FilterWrapper"
             resultMap="Order">
 
-        select
+        select oo.*, <include refid="productSaleColumns"/> from (select
         <include refid="orderColumns"/>,
-        <include refid="ru.complitex.salelog.service.CallGirlBean.callGirlColumns"/>,
-        <include refid="productSaleColumns"/>
+        <include refid="ru.complitex.salelog.service.CallGirlBean.callGirlColumns"/>
 
         from `order` o
         left join `call_girl` cg on o.`call_girl_id` = cg.`id`
-        left join `product_sale` ps on o.`object_id` = ps.`order_id` and ps.`end_date` is null
-        left join `product` p on ps.`product_id` = p.`id`
 
         where o.`end_date` is null
         <include refid="orderCondition"/>
@@ -171,6 +168,9 @@
         <if test="count > 0">
             limit ${first},${count}
         </if>
+        ) oo
+        left join `product_sale` ps on oo.`order_object_id` = ps.`order_id` and ps.`end_date` is null
+        left join `product` p on ps.`product_id` = p.`id`
     </select>
 
     <select id="countOrders" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="integer">

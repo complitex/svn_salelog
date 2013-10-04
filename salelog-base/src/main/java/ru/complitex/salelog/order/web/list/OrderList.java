@@ -21,6 +21,7 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.*;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.address.strategy.region.RegionStrategy;
+import org.complitex.dictionary.converter.BigDecimalConverter;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.entity.Person;
@@ -36,6 +37,7 @@ import org.complitex.template.web.template.TemplatePage;
 import ru.complitex.salelog.entity.CallGirl;
 import ru.complitex.salelog.order.entity.Order;
 import ru.complitex.salelog.order.entity.OrderStatus;
+import ru.complitex.salelog.order.entity.ProductSale;
 import ru.complitex.salelog.order.service.OrderBean;
 import ru.complitex.salelog.order.web.edit.OrderEdit;
 import ru.complitex.salelog.service.CallGirlBean;
@@ -56,6 +58,8 @@ import static org.complitex.dictionary.util.PageUtil.newSorting;
 public class OrderList extends TemplatePage {
 
     private static final SimpleDateFormat CREATE_DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
+    private static final BigDecimalConverter BIG_DECIMAL_CONVERTER = new BigDecimalConverter(2);
 
     @EJB
     private OrderBean orderBean;
@@ -133,6 +137,57 @@ public class OrderList extends TemplatePage {
                 item.add(new Label("address", order.getAddress()));
                 item.add(new Label("comment", order.getComment()));
                 item.add(new Label("status", order.getStatus() != null? order.getStatus().getLabel(getLocale()): ""));
+
+                final DataProvider<ProductSale> dataProvider = new DataProvider<ProductSale>() {
+
+                    @Override
+                    protected Iterable<? extends ProductSale> getData(int first, int count) {
+
+                        return order.getProductSales();
+                    }
+
+                    @Override
+                    protected int getSize() {
+                        return order.getProductSales().size();
+                    }
+                };
+
+                item.add(new DataView<ProductSale>("productCodeView", dataProvider) {
+
+                    @Override
+                    protected void populateItem(Item<ProductSale> item) {
+                        final ProductSale sale = item.getModelObject();
+
+                        item.add(new Label("productCode", sale.getProduct().getCode()));
+                    }
+                });
+                item.add(new DataView<ProductSale>("priceView", dataProvider) {
+
+                    @Override
+                    protected void populateItem(Item<ProductSale> item) {
+                        final ProductSale sale = item.getModelObject();
+
+                        item.add(new Label("price", BIG_DECIMAL_CONVERTER.convertToString(sale.getPrice(), getLocale())));
+                    }
+                });
+                item.add(new DataView<ProductSale>("countView", dataProvider) {
+
+                    @Override
+                    protected void populateItem(Item<ProductSale> item) {
+                        final ProductSale sale = item.getModelObject();
+
+                        item.add(new Label("count", Integer.toString(sale.getCount())));
+                    }
+                });
+                item.add(new DataView<ProductSale>("totalCostView", dataProvider) {
+
+                    @Override
+                    protected void populateItem(Item<ProductSale> item) {
+                        final ProductSale sale = item.getModelObject();
+
+                        item.add(new Label("totalCost", BIG_DECIMAL_CONVERTER.convertToString(sale.getTotalCost(), getLocale())));
+                    }
+                });
 
                 ScrollBookmarkablePageLink<WebPage> detailsLink = new ScrollBookmarkablePageLink<>("detailsLink",
                         getEditPage(), getEditPageParams(order.getId()),
