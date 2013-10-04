@@ -37,6 +37,7 @@ import ru.complitex.salelog.order.service.OrderBean;
 import ru.complitex.salelog.order.web.list.OrderList;
 import ru.complitex.salelog.service.CallGirlBean;
 import ru.complitex.salelog.service.ProductBean;
+import ru.complitex.salelog.web.component.NumberTextField;
 
 import javax.ejb.EJB;
 import java.math.BigDecimal;
@@ -281,7 +282,7 @@ public class OrderEdit extends FormTemplatePage {
         final IModel<Product> productModel = new Model<>();
         final IModel<Integer> countModel = new Model<>(1);
 
-        container.add(new DropDownChoice<>("product",
+        final DropDownChoice<Product> productDropChoice = new DropDownChoice<>("product",
                 productModel,
                 productChoice,
                 new IChoiceRenderer<Product>() {
@@ -295,16 +296,21 @@ public class OrderEdit extends FormTemplatePage {
                         return product != null && product.getId() != null? product.getId().toString(): "-1";
                     }
                 }
-        ));
+        );
+        container.add(productDropChoice);
 
-        container.add(new NumberTextField<Integer>("count", countModel, Integer.class) {
+        final NumberTextField<Integer> countField = new NumberTextField<Integer>("count", countModel, Integer.class) {
             @SuppressWarnings("unchecked")
             @Override
             public <C> IConverter<C> getConverter(Class<C> type) {
                 return (IConverter<C>) INTEGER_CONVERTER;
             }
 
-        }.setMinimum(1).setMaximum(Integer.MAX_VALUE).setRequired(true));
+        };
+        countField.setMinimum(1);
+        countField.setMaximum(Integer.MAX_VALUE);
+        countField.setRequired(true);
+        container.add(countField);
         
         container.add(new AjaxButton("addProductSaleButton") {
 
@@ -312,6 +318,13 @@ public class OrderEdit extends FormTemplatePage {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 boolean hasErrors = false;
+
+                countField.validate();
+                countField.updateModel();
+
+                productDropChoice.validate();
+                productDropChoice.updateModel();
+
                 if (productModel.getObject() == null) {
                     form.error("Product is required field");
                     hasErrors = true;
@@ -332,7 +345,7 @@ public class OrderEdit extends FormTemplatePage {
                 }
                 target.add(container);
             }
-        });
+        }.setDefaultFormProcessing(false));
 
         //history
         //Data Provider

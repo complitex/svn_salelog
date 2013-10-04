@@ -57,7 +57,7 @@
             </if>
 
             <if test="object.createDate != null">
-                and o.`create_date` = #{object.createDate}
+                and date(o.`create_date`) = #{object.createDate}
             </if>
 
             <if test="object.customer != null">

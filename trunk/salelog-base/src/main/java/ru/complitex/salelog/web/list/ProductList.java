@@ -11,7 +11,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -33,6 +32,7 @@ import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 import ru.complitex.salelog.entity.Product;
 import ru.complitex.salelog.service.ProductBean;
+import ru.complitex.salelog.web.component.NumberTextField;
 import ru.complitex.salelog.web.edit.ProductEdit;
 
 import javax.ejb.EJB;
