@@ -4,33 +4,33 @@
 <mapper namespace="ru.complitex.salelog.service.ProductBean">
 
     <resultMap id="Product" type="ru.complitex.salelog.entity.Product">
-        <id column="id" property="id"/>
-        <result column="code" property="code"/>
-        <result column="name" property="name"/>
-        <result column="price" property="price"/>
+        <id column="product_id" property="id"/>
+        <result column="product_code" property="code"/>
+        <result column="product_name" property="name"/>
+        <result column="product_price" property="price"/>
     </resultMap>
 
     <sql id="productColumns">
-        `id`, `code`, `name`, `price`
+        p.`id` as `product_id`, p.`code` as `product_code`, p.`name` as `product_name`, p.`price` as `product_price`
     </sql>
 
     <sql id="productCondition">
         <if test="object != null">
             <if test="object.id != null">
-                and `id` = #{object.id}
+                and p.`id` = #{object.id}
             </if>
 
             <if test="object.code != null">
-                and `code` = #{object.code}
+                and p.`code` = #{object.code}
             </if>
 
             <if test="object.name != null">
                 <choose>
                     <when test="like">
-                        and `name` like concat('%', #{object.name}, '%')
+                        and p.`name` like concat('%', #{object.name}, '%')
                     </when>
                     <otherwise>
-                        and `name` = #{object.name}
+                        and p.`name` = #{object.name}
                     </otherwise>
                 </choose>
             </if>
@@ -42,13 +42,13 @@
         select
         <include refid="productColumns"/>
 
-        from `product`
+        from `product` p
 
         where 1=1
         <include refid="productCondition"/>
 
         <if test="sortProperty != null">
-            order by ${sortProperty}
+            order by p.${sortProperty}
             <if test="asc">
                 ${asc}
             </if>
@@ -59,7 +59,7 @@
     </select>
 
     <select id="countProducts" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="integer">
-        select count(distinct `id`) from `product`
+        select count(distinct `id`) from `product` p
         where 1=1
         <include refid="productCondition"/>
     </select>
@@ -67,8 +67,8 @@
     <select id="selectProduct" parameterType="long" resultMap="Product">
         select
         <include refid="productColumns"/>
-        from `product`
-        where `id` = #{id}
+        from `product` p
+        where p.`id` = #{id}
     </select>
 
     <insert id="insertProduct"

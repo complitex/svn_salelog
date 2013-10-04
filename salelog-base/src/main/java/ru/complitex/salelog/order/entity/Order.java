@@ -1,5 +1,6 @@
 package ru.complitex.salelog.order.entity;
 
+import com.google.common.collect.Lists;
 import ru.complitex.salelog.entity.CallGirl;
 import org.complitex.dictionary.entity.DictionaryTemporalObject;
 import org.complitex.dictionary.entity.Person;
@@ -18,7 +19,7 @@ public class Order extends DictionaryTemporalObject {
     private String phones;
     private Long regionId;
     private String address;
-    private List<ProductSale> productSales;
+    private List<ProductSale> productSales = Lists.newArrayList();
     private String comment;
     private OrderStatus status;
 

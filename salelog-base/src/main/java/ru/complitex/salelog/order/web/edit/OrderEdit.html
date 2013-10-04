@@ -101,6 +101,81 @@
                 </td>
             </tr>
         </table>
+        <div wicket:id="container">
+            <table class="tbForm">
+                <tr>
+                    <th>
+                        <wicket:message key="product_sale"/>
+                        :
+                    </th>
+                    <td>
+                        <table cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td align="center">
+                                    <wicket:message key="product"/> <b class="blue">*</b>
+                                </td>
+                                <td align="center">
+                                    <wicket:message key="count"/> <b class="blue">*</b>
+                                </td>
+                                <td align="center"/>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select wicket:id="product"/>
+                                </td>
+                                <td>
+                                    <input type="number" wicket:id="count"/>
+                                </td>
+                                <td>
+                                    <input wicket:id="addProductSaleButton" type="submit" wicket:message="value:add" class="btnSmall"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <table class="tbColor bookContent" cellpadding="0" cellspacing="0" border="0">
+                <thead>
+                <tr>
+                <th>
+                    <wicket:message key="product_code"/>
+                </th>
+                <th>
+                    <wicket:message key="price"/>
+                </th>
+                <th>
+                    <wicket:message key="count"/>
+                </th>
+                <th>
+                    <wicket:message key="total_cost"/>
+                </th>
+                <th>
+                </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr wicket:id="data">
+                    <td>
+                        <span wicket:id="productCode"></span>
+                    </td>
+                    <td>
+                        <span wicket:id="price"></span>
+                    </td>
+                    <td>
+                        <span wicket:id="count"></span>
+                    </td>
+                    <td>
+                        <span wicket:id="totalCost"></span>
+                    </td>
+                    <td>
+                        <a wicket:id="deleteProductSaleLink">
+                            <span wicket:id="deleteProductSaleMessage"></span>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
         <div>
             <input type="submit" wicket:message="value:save" wicket:id="save" class="btnMiddle"/>
             <input type="button" wicket:message="value:cancel" wicket:id="cancel" class="btnMiddle"/>
