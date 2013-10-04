@@ -5,6 +5,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
@@ -39,6 +40,7 @@ import ru.complitex.salelog.service.ProductBean;
 
 import javax.ejb.EJB;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,6 +55,8 @@ public class OrderEdit extends FormTemplatePage {
     private static final BigDecimalConverter BIG_DECIMAL_CONVERTER = new BigDecimalConverter(2);
 
     private static final IntegerConverter INTEGER_CONVERTER = new IntegerConverter();
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     @EJB
     private OrderBean orderBean;
@@ -329,6 +333,97 @@ public class OrderEdit extends FormTemplatePage {
                 target.add(container);
             }
         });
+
+        //history
+        //Data Provider
+        final DataProvider<Order> historyProvider = new DataProvider<Order>() {
+
+            @Override
+            protected Iterable<? extends Order> getData(int first, int count) {
+
+                return history;
+            }
+
+            @Override
+            protected int getSize() {
+                return history.size();
+            }
+        };
+        dataProvider.setSort("order_object_id", SortOrder.ASCENDING);
+
+        //Data View
+        DataView<Order> historyView = new DataView<Order>("history", historyProvider) {
+
+            @Override
+            protected void populateItem(Item<Order> item) {
+                final Order order = item.getModelObject();
+                DomainObject region = order.getRegionId() != null? regionStrategy.findById(order.getRegionId(), false) : null;
+
+                item.add(new Label("beginDate", order.getBeginDate() != null ? DATE_FORMAT.format(order.getBeginDate()) : ""));
+                item.add(new Label("endDate", order.getEndDate() != null ? DATE_FORMAT.format(order.getEndDate()) : ""));
+                item.add(new Label("createDate", order.getCreateDate() != null ? DATE_FORMAT.format(order.getCreateDate()) : ""));
+                item.add(new Label("callGirlCode", order.getCallGirl() != null? order.getCallGirl().getCode(): ""));
+                item.add(new Label("customer", order.getCustomer() != null? order.getCustomer().toString(): ""));
+                item.add(new Label("phones", order.getPhones()));
+                item.add(new Label("region", region != null? regionStrategy.displayDomainObject(region, getLocale()): ""));
+                item.add(new Label("address", order.getAddress()));
+                item.add(new Label("comment", order.getComment()));
+                item.add(new Label("status", order.getStatus() != null? order.getStatus().getLabel(getLocale()): ""));
+
+                final DataProvider<ProductSale> dataProvider = new DataProvider<ProductSale>() {
+
+                    @Override
+                    protected Iterable<? extends ProductSale> getData(int first, int count) {
+
+                        return order.getProductSales();
+                    }
+
+                    @Override
+                    protected int getSize() {
+                        return order.getProductSales().size();
+                    }
+                };
+
+                item.add(new DataView<ProductSale>("productCodeView", dataProvider) {
+
+                    @Override
+                    protected void populateItem(Item<ProductSale> item) {
+                        final ProductSale sale = item.getModelObject();
+
+                        item.add(new Label("productCode", sale.getProduct().getCode()));
+                    }
+                });
+                item.add(new DataView<ProductSale>("priceView", dataProvider) {
+
+                    @Override
+                    protected void populateItem(Item<ProductSale> item) {
+                        final ProductSale sale = item.getModelObject();
+
+                        item.add(new Label("price", BIG_DECIMAL_CONVERTER.convertToString(sale.getPrice(), getLocale())));
+                    }
+                });
+                item.add(new DataView<ProductSale>("countView", dataProvider) {
+
+                    @Override
+                    protected void populateItem(Item<ProductSale> item) {
+                        final ProductSale sale = item.getModelObject();
+
+                        item.add(new Label("count", Integer.toString(sale.getCount())));
+                    }
+                });
+                item.add(new DataView<ProductSale>("totalCostView", dataProvider) {
+
+                    @Override
+                    protected void populateItem(Item<ProductSale> item) {
+                        final ProductSale sale = item.getModelObject();
+
+                        item.add(new Label("totalCost", BIG_DECIMAL_CONVERTER.convertToString(sale.getTotalCost(), getLocale())));
+                    }
+                });
+            }
+        };
+
+        add(historyView);
 
         // save button
         Button save = new Button("save") {

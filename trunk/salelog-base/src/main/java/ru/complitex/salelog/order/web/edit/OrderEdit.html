@@ -181,6 +181,133 @@
             <input type="button" wicket:message="value:cancel" wicket:id="cancel" class="btnMiddle"/>
         </div>
     </form>
+    <br/>
+    <table class="tbColor bookContent" cellpadding="0" cellspacing="0" border="0">
+        <thead>
+        <tr>
+            <th>
+                <wicket:message key="begin_date"/>
+            </th>
+            <th>
+                <wicket:message key="end_date"/>
+            </th>
+            <th>
+                <wicket:message key="create_date"/>
+            </th>
+            <th>
+                <wicket:message key="callGirlCode"/>
+            </th>
+            <th>
+                <wicket:message key="customer"/>
+            </th>
+            <th>
+                <wicket:message key="phones"/>
+            </th>
+            <th>
+                <wicket:message key="region"/>
+            </th>
+            <th>
+                <wicket:message key="address"/>
+            </th>
+            <th>
+                <wicket:message key="comment"/>
+            </th>
+            <th>
+                <wicket:message key="status"/>
+            </th>
+            <th>
+                <wicket:message key="product_code"/>
+            </th>
+            <th>
+                <wicket:message key="count"/>
+            </th>
+            <th>
+                <wicket:message key="price"/>
+            </th>
+            <th>
+                <wicket:message key="total_cost"/>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr wicket:id="history">
+            <td>
+                <span wicket:id="beginDate"></span>
+            </td>
+            <td>
+                <span wicket:id="endDate"></span>
+            </td>
+            <td>
+                <span wicket:id="createDate"></span>
+            </td>
+            <td>
+                <span wicket:id="callGirlCode"></span>
+            </td>
+            <td>
+                <span wicket:id="customer"></span>
+            </td>
+            <td>
+                <span wicket:id="phones"></span>
+            </td>
+            <td>
+                <span wicket:id="region"></span>
+            </td>
+            <td>
+                <span wicket:id="address"></span>
+            </td>
+            <td>
+                <span wicket:id="comment"></span>
+            </td>
+            <td>
+                <span wicket:id="status"></span>
+            </td>
+            <td>
+                <table>
+                    <div wicket:id="productCodeView">
+                        <tr>
+                            <td>
+                                <span wicket:id="productCode"></span>
+                            </td>
+                        </tr>
+                    </div>
+                </table>
+            </td>
+            <td>
+                <table>
+                    <div wicket:id="priceView">
+                        <tr>
+                            <td>
+                                <span wicket:id="price"></span>
+                            </td>
+                        </tr>
+                    </div>
+                </table>
+            </td>
+            <td>
+                <table>
+                    <div wicket:id="countView">
+                        <tr>
+                            <td>
+                                <span wicket:id="count"></span>
+                            </td>
+                        </tr>
+                    </div>
+                </table>
+            </td>
+            <td>
+                <table>
+                    <div wicket:id="totalCostView">
+                        <tr>
+                            <td>
+                                <span wicket:id="totalCost"></span>
+                            </td>
+                        </tr>
+                    </div>
+                </table>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </wicket:extend>
 </body>
 </html>
