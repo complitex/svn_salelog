@@ -19,6 +19,19 @@
                      resultMap="org.complitex.dictionary.service.PersonBean.Person"/>
 
         <association property="callGirl" resultMap="ru.complitex.salelog.service.CallGirlBean.CallGirl"/>
+
+        <association property="productSales" resultMap="ProductSale"/>
+    </resultMap>
+
+    <resultMap id="ProductSale" type="ru.complitex.salelog.order.entity.ProductSale">
+        <id column="product_sale_pk_id" property="pkId"/>
+        <result column="product_sale_order_id" property="orderId"/>
+        <result column="product_sale_price" property="price"/>
+        <result column="product_sale_count" property="count"/>
+        <result column="product_sale_total_cost" property="totalCost"/>
+        <result column="product_sale_begin_date" property="beginDate"/>
+        <result column="product_sale_end_date" property="endDate"/>
+        <association property="product" resultMap="ru.complitex.salelog.service.ProductBean.Product"/>
     </resultMap>
 
     <sql id="orderColumns">
@@ -27,6 +40,13 @@
         o.`phones` as `order_phones`, o.`region_id` as `order_region_id`, o.`address` as `order_address`,
         o.`comment` as `order_comment`, o.`order_status_code` as `order_status_code`,
         o.`begin_date` as `order_begin_date`, o.`end_date` as `order_end_date`
+    </sql>
+
+    <sql id="productSaleColumns">
+        ps.`pk_id` as `product_sale_pk_id`, ps.`order_id` as `product_sale_order_id`,
+        ps.`count` as `product_sale_count`, ps.`price` as `product_sale_price`, ps.`total_cost` as `product_sale_total_cost`,
+        ps.`begin_date` as `product_sale_begin_date`, ps.`end_date` as `product_sale_end_date`,
+        <include refid="ru.complitex.salelog.service.ProductBean.productColumns"/>
     </sql>
 
 
@@ -102,10 +122,13 @@
 
         select
         <include refid="orderColumns"/>,
-        <include refid="ru.complitex.salelog.service.CallGirlBean.callGirlColumns"/>
+        <include refid="ru.complitex.salelog.service.CallGirlBean.callGirlColumns"/>,
+        <include refid="productSaleColumns"/>
 
         from `order` o
         left join `call_girl` cg on o.`call_girl_id` = cg.`id`
+        left join `product_sale` ps on o.`object_id` = ps.`order_id` and ps.`end_date` is null
+        left join `product` p on ps.`product_id` = p.`id`
 
         where o.`end_date` is null
         <include refid="orderCondition"/>
@@ -159,17 +182,25 @@
 
     <select id="selectOrderById" parameterType="long" resultMap="Order">
         select
-        <include refid="orderColumns"/>
+        <include refid="orderColumns"/>,
+        <include refid="ru.complitex.salelog.service.CallGirlBean.callGirlColumns"/>,
+        <include refid="productSaleColumns"/>
         from `order` o
         left join `call_girl` cg on o.`call_girl_id` = cg.`id`
-        where o.`object_id` = #{id} order by o.`begin_date` desc
+        left join `product_sale` ps on o.`object_id` = ps.`order_id`
+        left join `product` p on ps.`product_id` = p.`id`
+        where o.`object_id` = #{id} order by o.`begin_date` desc, ps.`begin_date` desc
     </select>
 
     <select id="selectOrderByPkId" parameterType="long" resultMap="Order">
         select
-        <include refid="orderColumns"/>
+        <include refid="orderColumns"/>,
+        <include refid="ru.complitex.salelog.service.CallGirlBean.callGirlColumns"/>,
+        <include refid="productSaleColumns"/>
         from `order` o
         left join `call_girl` cg on o.`call_girl_id` = cg.`id`
+        left join `product_sale` ps on o.`object_id` = ps.`order_id`
+        left join `product` p on ps.`product_id` = p.`id`
         where o.`pk_id` = #{pkId}
     </select>
 
@@ -184,6 +215,17 @@
     <update id="updateOrderEndDate"
             parameterType="ru.complitex.salelog.order.entity.Order">
         update `order` set `end_date` = #{endDate} where `pk_id` = #{pkId}
+    </update>
+
+    <insert id="insertProductSale"
+            parameterType="ru.complitex.salelog.order.entity.ProductSale" keyProperty="pkId" useGeneratedKeys="true">
+        insert into `product_sale` (`order_id`, `product_id`, `price`, `count`, `total_cost`, `begin_date`, `end_date`)
+                            values (#{orderId}, #{product.id}, #{price}, #{count}, #{totalCost}, #{beginDate}, #{endDate})
+    </insert>
+
+    <update id="updateProductSaleEndDate"
+            parameterType="ru.complitex.salelog.order.entity.ProductSale">
+        update `product_sale` set `end_date` = #{endDate} where `pk_id` = #{pkId}
     </update>
 
 </mapper>

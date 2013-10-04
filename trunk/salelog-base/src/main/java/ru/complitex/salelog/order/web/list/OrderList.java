@@ -122,14 +122,14 @@ public class OrderList extends TemplatePage {
             @Override
             protected void populateItem(Item<Order> item) {
                 final Order order = item.getModelObject();
-                DomainObject region = order.getRegionId() != null? regionStrategy.findById(order.getId(), false) : null;
+                DomainObject region = order.getRegionId() != null? regionStrategy.findById(order.getRegionId(), false) : null;
 
                 item.add(new Label("id", order.getId().toString()));
                 item.add(new Label("createDate", order.getCreateDate() != null ? CREATE_DATE_FORMAT.format(order.getCreateDate()) : ""));
                 item.add(new Label("callGirlCode", order.getCallGirl() != null? order.getCallGirl().getCode(): ""));
                 item.add(new Label("customer", order.getCustomer() != null? order.getCustomer().toString(): ""));
                 item.add(new Label("phones", order.getPhones()));
-                item.add(new Label("region", order.getRegionId() != null? regionStrategy.displayDomainObject(region, getLocale()): ""));
+                item.add(new Label("region", region != null? regionStrategy.displayDomainObject(region, getLocale()): ""));
                 item.add(new Label("address", order.getAddress()));
                 item.add(new Label("comment", order.getComment()));
                 item.add(new Label("status", order.getStatus() != null? order.getStatus().getLabel(getLocale()): ""));

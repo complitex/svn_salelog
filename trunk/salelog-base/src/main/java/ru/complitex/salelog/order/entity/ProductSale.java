@@ -13,6 +13,7 @@ public class ProductSale extends DictionaryTemporalObject {
     private int count;
     private BigDecimal price;
     private BigDecimal totalCost;
+    private Long orderId;
 
     public Product getProduct() {
         return product;
@@ -44,5 +45,13 @@ public class ProductSale extends DictionaryTemporalObject {
 
     public void setTotalCost(BigDecimal totalCost) {
         this.totalCost = totalCost;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 }
