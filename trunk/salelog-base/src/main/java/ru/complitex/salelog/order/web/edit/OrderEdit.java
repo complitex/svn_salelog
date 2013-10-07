@@ -1,11 +1,13 @@
 package ru.complitex.salelog.order.web.edit;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
@@ -18,6 +20,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.convert.converter.IntegerConverter;
 import org.apache.wicket.util.string.StringValue;
+import org.apache.wicket.util.value.IValueMap;
 import org.complitex.address.strategy.region.RegionStrategy;
 import org.complitex.dictionary.converter.BigDecimalConverter;
 import org.complitex.dictionary.entity.DomainObject;
@@ -37,6 +40,8 @@ import ru.complitex.salelog.order.service.OrderBean;
 import ru.complitex.salelog.order.web.list.OrderList;
 import ru.complitex.salelog.service.CallGirlBean;
 import ru.complitex.salelog.service.ProductBean;
+import ru.complitex.salelog.util.HistoryUtils;
+import ru.complitex.salelog.web.component.LabelHistory;
 import ru.complitex.salelog.web.component.NumberTextField;
 
 import javax.ejb.EJB;
@@ -44,6 +49,8 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Pavel Sknar
@@ -364,24 +371,32 @@ public class OrderEdit extends FormTemplatePage {
         };
         dataProvider.setSort("order_object_id", SortOrder.ASCENDING);
 
+        final Map<Order, Set<String>> changed = Maps.newHashMap();
+        try {
+            changed.putAll(HistoryUtils.getChangedFields(history));
+        } catch (Exception e) {
+            log.warn("Can get changed fields", e);
+        }
+
         //Data View
         DataView<Order> historyView = new DataView<Order>("history", historyProvider) {
 
             @Override
             protected void populateItem(Item<Order> item) {
                 final Order order = item.getModelObject();
+                Set<String> changedFields = changed.get(order);
                 DomainObject region = order.getRegionId() != null? regionStrategy.findById(order.getRegionId(), false) : null;
 
                 item.add(new Label("beginDate", order.getBeginDate() != null ? DATE_FORMAT.format(order.getBeginDate()) : ""));
                 item.add(new Label("endDate", order.getEndDate() != null ? DATE_FORMAT.format(order.getEndDate()) : ""));
-                item.add(new Label("createDate", order.getCreateDate() != null ? DATE_FORMAT.format(order.getCreateDate()) : ""));
-                item.add(new Label("callGirlCode", order.getCallGirl() != null? order.getCallGirl().getCode(): ""));
-                item.add(new Label("customer", order.getCustomer() != null? order.getCustomer().toString(): ""));
-                item.add(new Label("phones", order.getPhones()));
-                item.add(new Label("region", region != null? regionStrategy.displayDomainObject(region, getLocale()): ""));
-                item.add(new Label("address", order.getAddress()));
-                item.add(new Label("comment", order.getComment()));
-                item.add(new Label("status", order.getStatus() != null? order.getStatus().getLabel(getLocale()): ""));
+                item.add(new LabelHistory("createDate", order.getCreateDate() != null ? DATE_FORMAT.format(order.getCreateDate()) : "", changedFields));
+                item.add(new LabelHistory("callGirlCode", order.getCallGirl() != null? order.getCallGirl().getCode(): "", changedFields));
+                item.add(new LabelHistory("customer", order.getCustomer() != null? order.getCustomer().toString(): "", changedFields));
+                item.add(new LabelHistory("phones", order.getPhones(), changedFields));
+                item.add(new LabelHistory("region", region != null? regionStrategy.displayDomainObject(region, getLocale()): "", changedFields));
+                item.add(new LabelHistory("address", order.getAddress(), changedFields));
+                item.add(new LabelHistory("comment", order.getComment(), changedFields));
+                item.add(new LabelHistory("status", order.getStatus() != null? order.getStatus().getLabel(getLocale()): "", changedFields));
 
                 final DataProvider<ProductSale> dataProvider = new DataProvider<ProductSale>() {
 

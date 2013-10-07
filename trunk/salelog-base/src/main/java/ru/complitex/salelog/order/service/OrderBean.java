@@ -50,6 +50,9 @@ public class OrderBean extends AbstractBean {
                     cache.add(sale);
                 } else if (order.getEndDate() != null && sale.getBeginDate().after(order.getEndDate())) {
                     cache.add(sale);
+                } else if (order.getBeginDate() != null && sale.getEndDate() != null &&
+                        order.getBeginDate().compareTo(sale.getEndDate()) >= 0) {
+                   cache.add(sale);
                 }
             }
             order.getProductSales().removeAll(cache);
