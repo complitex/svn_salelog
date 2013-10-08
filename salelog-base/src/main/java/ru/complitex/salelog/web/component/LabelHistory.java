@@ -11,19 +11,24 @@ import java.util.Set;
  */
 public class LabelHistory extends Label {
 
-    Set<String> changedFields;
+    boolean changed;
 
     public LabelHistory(String id, String label, Set<String> changedFields) {
         super(id, label);
-        this.changedFields = changedFields;
+        changed = changedFields != null && changedFields.contains(id);
+    }
+
+    public LabelHistory(String id, String label, Boolean changed) {
+        super(id, label);
+        this.changed = changed != null? changed : false;
     }
 
     @Override
     protected void onComponentTag(ComponentTag tag) {
         super.onComponentTag(tag);
-        if (changedFields != null && changedFields.contains(getId())) {
+        if (! changed) {
             IValueMap attributes = tag.getAttributes();
-            attributes.put("style", "color: #f00;");
+            attributes.put("style", "color: dimgray;");
         }
     }
 }

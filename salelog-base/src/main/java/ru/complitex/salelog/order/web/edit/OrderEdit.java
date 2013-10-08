@@ -2,6 +2,7 @@ package ru.complitex.salelog.order.web.edit;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -51,6 +52,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Pavel Sknar
@@ -93,7 +95,7 @@ public class OrderEdit extends FormTemplatePage {
             if (history.size() <= 0) {
                 throw new RuntimeException("Order by id='" + orderId + "' not found");
             }
-            order = history.get(0);
+            order = history.remove(0);
         }
         init();
     }
@@ -120,7 +122,7 @@ public class OrderEdit extends FormTemplatePage {
         add(form);
 
         // call girl`s code
-        form.add(new DropDownChoice<>("callGirlCode",
+        form.add(new DropDownChoice<>("callGirl",
                 new IModel<CallGirl>() {
                     @Override
                     public CallGirl getObject() {
@@ -347,6 +349,8 @@ public class OrderEdit extends FormTemplatePage {
                     sale.setPrice(productModel.getObject().getPrice());
                     sale.setTotalCost(sale.getPrice().multiply(new BigDecimal(sale.getCount())));
 
+                    countModel.setObject(1);
+
                     order.getProductSales().add(sale);
                     productChoice.remove(sale.getProduct());
                 }
@@ -373,7 +377,7 @@ public class OrderEdit extends FormTemplatePage {
 
         final Map<Order, Set<String>> changed = Maps.newHashMap();
         try {
-            changed.putAll(HistoryUtils.getChangedFields(history));
+            changed.putAll(HistoryUtils.getChangedFields(order, history));
         } catch (Exception e) {
             log.warn("Can get changed fields", e);
         }
@@ -388,15 +392,22 @@ public class OrderEdit extends FormTemplatePage {
                 DomainObject region = order.getRegionId() != null? regionStrategy.findById(order.getRegionId(), false) : null;
 
                 item.add(new Label("beginDate", order.getBeginDate() != null ? DATE_FORMAT.format(order.getBeginDate()) : ""));
-                item.add(new Label("endDate", order.getEndDate() != null ? DATE_FORMAT.format(order.getEndDate()) : ""));
-                item.add(new LabelHistory("createDate", order.getCreateDate() != null ? DATE_FORMAT.format(order.getCreateDate()) : "", changedFields));
-                item.add(new LabelHistory("callGirlCode", order.getCallGirl() != null? order.getCallGirl().getCode(): "", changedFields));
+                item.add(new LabelHistory("callGirl", order.getCallGirl() != null? order.getCallGirl().getCode(): "", changedFields));
                 item.add(new LabelHistory("customer", order.getCustomer() != null? order.getCustomer().toString(): "", changedFields));
                 item.add(new LabelHistory("phones", order.getPhones(), changedFields));
                 item.add(new LabelHistory("region", region != null? regionStrategy.displayDomainObject(region, getLocale()): "", changedFields));
                 item.add(new LabelHistory("address", order.getAddress(), changedFields));
                 item.add(new LabelHistory("comment", order.getComment(), changedFields));
                 item.add(new LabelHistory("status", order.getStatus() != null? order.getStatus().getLabel(getLocale()): "", changedFields));
+
+
+                final Map<ProductSale, Boolean> changed = Maps.newHashMap();
+                for (ProductSale sale : order.getProductSales()) {
+                    changed.put(sale, !OrderEdit.this.order.getProductSales().contains(sale));
+                }
+                for (ProductSale sale : OrderEdit.this.order.getProductSales()) {
+                    changed.put(sale, !order.getProductSales().contains(sale));
+                }
 
                 final DataProvider<ProductSale> dataProvider = new DataProvider<ProductSale>() {
 
@@ -418,7 +429,7 @@ public class OrderEdit extends FormTemplatePage {
                     protected void populateItem(Item<ProductSale> item) {
                         final ProductSale sale = item.getModelObject();
 
-                        item.add(new Label("productCode", sale.getProduct().getCode()));
+                        item.add(new LabelHistory("productCode", sale.getProduct().getCode(), changed.get(sale)));
                     }
                 });
                 item.add(new DataView<ProductSale>("priceView", dataProvider) {
@@ -427,7 +438,9 @@ public class OrderEdit extends FormTemplatePage {
                     protected void populateItem(Item<ProductSale> item) {
                         final ProductSale sale = item.getModelObject();
 
-                        item.add(new Label("price", BIG_DECIMAL_CONVERTER.convertToString(sale.getPrice(), getLocale())));
+                        item.add(new LabelHistory("price",
+                                BIG_DECIMAL_CONVERTER.convertToString(sale.getPrice(), getLocale()),
+                                changed.get(sale)));
                     }
                 });
                 item.add(new DataView<ProductSale>("countView", dataProvider) {
@@ -436,7 +449,7 @@ public class OrderEdit extends FormTemplatePage {
                     protected void populateItem(Item<ProductSale> item) {
                         final ProductSale sale = item.getModelObject();
 
-                        item.add(new Label("count", Integer.toString(sale.getCount())));
+                        item.add(new LabelHistory("count", Integer.toString(sale.getCount()), changed.get(sale)));
                     }
                 });
                 item.add(new DataView<ProductSale>("totalCostView", dataProvider) {
@@ -445,7 +458,9 @@ public class OrderEdit extends FormTemplatePage {
                     protected void populateItem(Item<ProductSale> item) {
                         final ProductSale sale = item.getModelObject();
 
-                        item.add(new Label("totalCost", BIG_DECIMAL_CONVERTER.convertToString(sale.getTotalCost(), getLocale())));
+                        item.add(new LabelHistory("totalCost",
+                                BIG_DECIMAL_CONVERTER.convertToString(sale.getTotalCost(),
+                                getLocale()), changed.get(sale)));
                     }
                 });
             }

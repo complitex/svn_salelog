@@ -16,11 +16,11 @@
         <table class="tbForm">
             <tr>
                 <th>
-                    <wicket:message key="callGirlCode"/> <b class="blue">*</b>
+                    <wicket:message key="callGirl"/> <b class="blue">*</b>
                     :
                 </th>
                 <td>
-                    <select wicket:id="callGirlCode"/>
+                    <select wicket:id="callGirl"/>
                 </td>
             </tr>
             <tr>
@@ -66,20 +66,20 @@
             </tr>
             <tr>
                 <th>
-                    <wicket:message key="address"/> <b class="blue">*</b>
-                    :
-                </th>
-                <td>
-                    <input type="text" wicket:id="address" size="80"/>
-                </td>
-            </tr>
-            <tr>
-                <th>
                     <wicket:message key="region"/> <b class="blue">*</b>
                     :
                 </th>
                 <td>
                     <select wicket:id="region"/>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <wicket:message key="address"/> <b class="blue">*</b>
+                    :
+                </th>
+                <td>
+                    <input type="text" wicket:id="address" size="80"/>
                 </td>
             </tr>
             <tr>
@@ -134,7 +134,7 @@
                     </td>
                 </tr>
             </table>
-            <table class="tbColor bookContent" cellpadding="0" cellspacing="0" border="0">
+            <table class="tbColor bookContent contentBorder" cellpadding="0" cellspacing="0" border="0">
                 <thead>
                 <tr>
                 <th>
@@ -182,20 +182,14 @@
         </div>
     </form>
     <br/>
-    <table class="tbColor bookContent" cellpadding="0" cellspacing="0" border="0">
+    <table class="tbColor bookContent contentBorder" cellpadding="0" cellspacing="0" border="0">
         <thead>
         <tr>
             <th>
                 <wicket:message key="begin_date"/>
             </th>
             <th>
-                <wicket:message key="end_date"/>
-            </th>
-            <th>
-                <wicket:message key="create_date"/>
-            </th>
-            <th>
-                <wicket:message key="callGirlCode"/>
+                <wicket:message key="callGirl"/>
             </th>
             <th>
                 <wicket:message key="customer"/>
@@ -235,13 +229,7 @@
                 <span wicket:id="beginDate"></span>
             </td>
             <td>
-                <span wicket:id="endDate"></span>
-            </td>
-            <td>
-                <span wicket:id="createDate"></span>
-            </td>
-            <td>
-                <span wicket:id="callGirlCode"></span>
+                <span wicket:id="callGirl"></span>
             </td>
             <td>
                 <span wicket:id="customer"></span>
