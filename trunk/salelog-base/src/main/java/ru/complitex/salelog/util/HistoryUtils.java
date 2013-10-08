@@ -3,6 +3,7 @@ package ru.complitex.salelog.util;
 import com.google.common.base.Joiner;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -18,6 +19,26 @@ import java.util.*;
  * @author Pavel Sknar
  */
 public abstract class HistoryUtils {
+
+    public static <T> Map<T, Set<String>> getChangedFields(T standard, List<T> objects) throws Exception {
+
+        Map<T, Set<String>> result = Maps.newHashMap();
+
+        Map<String, String> standardFields = getFields(standard);
+
+        for (T object : objects) {
+            Map<String, String> objectFields = getFields(object);
+            MapDifference<String, String> diffMap = Maps.difference(standardFields, objectFields);
+
+            Set<String> diff = diffMap.entriesDiffering().keySet();
+
+            Set<String> subResult = addParentField(diff);
+
+            result.put(object, subResult);
+        }
+
+        return result;
+    }
 
     public static <T> Map<T, Set<String>> getChangedFields(List<T> objects) throws Exception {
 
@@ -44,10 +65,26 @@ public abstract class HistoryUtils {
                     oldFields,
                     newFields);
 
-            result.put(oldObject, diffMap.entriesDiffering().keySet());
+            Set<String> diff = diffMap.entriesDiffering().keySet();
+
+            Set<String> subResult = addParentField(diff);
+
+            result.put(oldObject, subResult);
         }
 
         return result;
+    }
+
+    private static Set<String> addParentField(Set<String> diff) {
+        Set<String> subResult = Sets.newHashSet();
+        for (String s : diff) {
+            int idx = StringUtils.indexOf(s, ':');
+            if (idx > 0) {
+                subResult.add(StringUtils.substring(s, 0, idx));
+            }
+        }
+        subResult.addAll(diff);
+        return subResult;
     }
 
     private static <T> Map<String, String> getFields(T object) throws Exception {
