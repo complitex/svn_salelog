@@ -2,13 +2,14 @@ package ru.complitex.salelog.order.web.edit;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
@@ -21,10 +22,11 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.convert.converter.IntegerConverter;
 import org.apache.wicket.util.string.StringValue;
-import org.apache.wicket.util.value.IValueMap;
+import org.apache.wicket.util.string.Strings;
 import org.complitex.address.strategy.region.RegionStrategy;
 import org.complitex.dictionary.converter.BigDecimalConverter;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.entity.Person;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
@@ -48,11 +50,7 @@ import ru.complitex.salelog.web.component.NumberTextField;
 import javax.ejb.EJB;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.*;
 
 /**
  * @author Pavel Sknar
@@ -122,7 +120,7 @@ public class OrderEdit extends FormTemplatePage {
         add(form);
 
         // call girl`s code
-        form.add(new DropDownChoice<>("callGirl",
+        final AutoCompleteTextField<CallGirl> callGirlField = new AutoCompleteTextField<CallGirl>("callGirl",
                 new IModel<CallGirl>() {
                     @Override
                     public CallGirl getObject() {
@@ -138,20 +136,54 @@ public class OrderEdit extends FormTemplatePage {
                     public void detach() {
 
                     }
-                },
-                callGirlBean.getCallGirls(null),
-                new IChoiceRenderer<CallGirl>() {
+                }
+                , CallGirl.class
+                , new AbstractAutoCompleteTextRenderer<CallGirl>() {
                     @Override
-                    public Object getDisplayValue(CallGirl callGirl) {
-                        return callGirl.getCode();
+                    protected String getTextValue(CallGirl object) {
+                        return object.getCode();
+                    }
+                }
+                , new AutoCompleteSettings()
+        ) {
+            @Override
+            protected Iterator<CallGirl> getChoices(String input)
+            {
+                if (Strings.isEmpty(input)) {
+                    List<CallGirl> emptyList = Collections.emptyList();
+                    return emptyList.iterator();
+                }
+
+                FilterWrapper<CallGirl> filter = FilterWrapper.of(new CallGirl(input));
+                filter.setLike(true);
+                filter.setCount(10);
+                List<CallGirl> choices = callGirlBean.getCallGirls(filter);
+
+                return choices.iterator();
+            }
+
+            @Override
+            public <C> IConverter<C> getConverter(Class<C> type) {
+                return new IConverter<C>() {
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public C convertToObject(String value, Locale locale) {
+                        FilterWrapper<CallGirl> filter = FilterWrapper.of(new CallGirl(value));
+                        filter.setLike(false);
+                        filter.setCount(1);
+                        List<CallGirl> callGirls = callGirlBean.getCallGirls(filter);
+                        return callGirls.size() > 0? (C)callGirls.get(0) : null;
                     }
 
                     @Override
-                    public String getIdValue(CallGirl callGirl, int i) {
-                        return callGirl != null && callGirl.getId() != null? callGirl.getId().toString(): "-1";
+                    public String convertToString(C value, Locale locale) {
+                        return value != null? ((CallGirl)value).getCode(): "";
                     }
-                }
-        ).setRequired(true));
+                };
+            }
+        };
+        callGirlField.setRequired(true);
+        form.add(callGirlField);
 
         // customer FIO
         form.add(new TextField<>("lastName",   new PropertyModel<String>(order.getCustomer(), "lastName")).setRequired(true));
@@ -235,12 +267,6 @@ public class OrderEdit extends FormTemplatePage {
         container.setVisible(true);
         form.add(container);
 
-        final List<Product> productChoice = productBean.getProducts(null);
-
-        for (ProductSale sale : order.getProductSales()) {
-            productChoice.remove(sale.getProduct());
-        }
-
         //Data Provider
         final DataProvider<ProductSale> dataProvider = new DataProvider<ProductSale>() {
 
@@ -272,7 +298,6 @@ public class OrderEdit extends FormTemplatePage {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         order.getProductSales().remove(sale);
-                        productChoice.add(sale.getProduct());
                         target.add(container);
                     }
                 };
@@ -291,22 +316,58 @@ public class OrderEdit extends FormTemplatePage {
         final IModel<Product> productModel = new Model<>();
         final IModel<Integer> countModel = new Model<>(1);
 
-        final DropDownChoice<Product> productDropChoice = new DropDownChoice<>("product",
-                productModel,
-                productChoice,
-                new IChoiceRenderer<Product>() {
+        final AutoCompleteTextField<Product> productField = new AutoCompleteTextField<Product>("product",
+                productModel
+                , Product.class
+                , new AbstractAutoCompleteTextRenderer<Product>() {
+            @Override
+            protected String getTextValue(Product object) {
+                return object.getCode();
+            }
+        }
+                , new AutoCompleteSettings()
+        ) {
+            @Override
+            protected Iterator<Product> getChoices(String input)
+            {
+                if (Strings.isEmpty(input)) {
+                    List<Product> emptyList = Collections.emptyList();
+                    return emptyList.iterator();
+                }
+
+                FilterWrapper<Product> filter = FilterWrapper.of(new Product(input));
+                filter.setLike(true);
+                filter.setCount(10);
+                List<Product> choices = productBean.getProducts(filter);
+                for (ProductSale sale : order.getProductSales()) {
+                    choices.remove(sale.getProduct());
+                }
+
+                return choices.iterator();
+            }
+
+            @Override
+            public <C> IConverter<C> getConverter(Class<C> type) {
+                return new IConverter<C>() {
+                    @SuppressWarnings("unchecked")
                     @Override
-                    public Object getDisplayValue(Product product) {
-                        return product.getCode();
+                    public C convertToObject(String value, Locale locale) {
+                        FilterWrapper<Product> filter = FilterWrapper.of(new Product(value));
+                        filter.setLike(false);
+                        filter.setCount(1);
+                        List<Product> products = productBean.getProducts(filter);
+                        return products.size() > 0? (C)products.get(0) : null;
                     }
 
                     @Override
-                    public String getIdValue(Product product, int i) {
-                        return product != null && product.getId() != null? product.getId().toString(): "-1";
+                    public String convertToString(C value, Locale locale) {
+                        return value != null? ((Product)value).getCode(): "";
                     }
-                }
-        );
-        container.add(productDropChoice);
+                };
+            }
+        };
+        productField.setRequired(true);
+        container.add(productField);
 
         final NumberTextField<Integer> countField = new NumberTextField<Integer>("count", countModel, Integer.class) {
             @SuppressWarnings("unchecked")
@@ -331,8 +392,8 @@ public class OrderEdit extends FormTemplatePage {
                 countField.validate();
                 countField.updateModel();
 
-                productDropChoice.validate();
-                productDropChoice.updateModel();
+                productField.validate();
+                productField.updateModel();
 
                 if (productModel.getObject() == null) {
                     form.error("Product is required field");
@@ -352,7 +413,6 @@ public class OrderEdit extends FormTemplatePage {
                     countModel.setObject(1);
 
                     order.getProductSales().add(sale);
-                    productChoice.remove(sale.getProduct());
                 }
                 target.add(container);
             }

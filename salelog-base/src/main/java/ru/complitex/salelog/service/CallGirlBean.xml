@@ -21,7 +21,14 @@
             </if>
 
             <if test="object.code != null">
-                and cg.`code` = #{object.code}
+                <choose>
+                    <when test="like">
+                        and cg.`code` like  concat(#{object.code}, '%')
+                    </when>
+                    <otherwise>
+                        and cg.`code` = #{object.code}
+                    </otherwise>
+                </choose>
             </if>
 
             <if test="object.person != null">
