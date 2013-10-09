@@ -99,7 +99,7 @@
                 </if>
 
                 <if test="object.callGirl.code != null">
-                    and cg.`code` = #{object.callGirl.code}
+                    and cg.`code` = like concat('%', #{object.callGirl.code}, '%')
                 </if>
 
                 <if test="object.callGirl.person != null">
