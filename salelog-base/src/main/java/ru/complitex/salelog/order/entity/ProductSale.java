@@ -15,6 +15,13 @@ public class ProductSale extends DictionaryTemporalObject {
     private BigDecimal totalCost;
     private Long orderId;
 
+    public ProductSale() {
+    }
+
+    public ProductSale(int count) {
+        this.count = count;
+    }
+
     public Product getProduct() {
         return product;
     }

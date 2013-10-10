@@ -118,6 +118,7 @@
                                     <wicket:message key="count"/> <b class="blue">*</b>
                                 </td>
                                 <td align="center"/>
+                                <td align="center"/>
                             </tr>
                             <tr>
                                 <td>
@@ -127,7 +128,10 @@
                                     <input type="number" wicket:id="count"/>
                                 </td>
                                 <td>
-                                    <input wicket:id="addProductSaleButton" type="submit" wicket:message="value:add" class="btnSmall"/>
+                                    <input wicket:id="addProductSaleButton" type="submit" class="btnSmall"/>
+                                </td>
+                                <td>
+                                    <input wicket:id="cancelProductSaleButton" type="submit" wicket:message="value:cancel" class="btnSmall"/>
                                 </td>
                             </tr>
                         </table>
@@ -151,6 +155,8 @@
                 </th>
                 <th>
                 </th>
+                <th>
+                </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -170,6 +176,11 @@
                     <td>
                         <a wicket:id="deleteProductSaleLink">
                             <span wicket:id="deleteProductSaleMessage"></span>
+                        </a>
+                    </td>
+                    <td>
+                        <a wicket:id="editProductSaleLink">
+                            <span wicket:id="editProductSaleMessage"></span>
                         </a>
                     </td>
                 </tr>
