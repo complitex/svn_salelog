@@ -5,11 +5,13 @@ import com.google.common.collect.Maps;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
@@ -23,6 +25,7 @@ import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.convert.converter.IntegerConverter;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.Strings;
+import org.apache.wicket.util.value.IValueMap;
 import org.complitex.address.strategy.region.RegionStrategy;
 import org.complitex.dictionary.converter.BigDecimalConverter;
 import org.complitex.dictionary.entity.DomainObject;
@@ -262,10 +265,144 @@ public class OrderEdit extends FormTemplatePage {
                 }
         ).setRequired(true));
 
-        final WebMarkupContainer container = new WebMarkupContainer("container");
+        final IModel<ProductSale> saleModel = new CompoundPropertyModel<>(new ProductSale(1));
+
+        final WebMarkupContainer container = new WebMarkupContainer("container", saleModel);
         container.setOutputMarkupPlaceholderTag(true);
         container.setVisible(true);
         form.add(container);
+
+        final AutoCompleteTextField<Product> productField = new AutoCompleteTextField<Product>("product"
+                , Product.class
+                , new AbstractAutoCompleteTextRenderer<Product>() {
+            @Override
+            protected String getTextValue(Product object) {
+                return object.getCode();
+            }
+        }
+        ) {
+            @Override
+            protected Iterator<Product> getChoices(String input)
+            {
+                if (Strings.isEmpty(input)) {
+                    List<Product> emptyList = Collections.emptyList();
+                    return emptyList.iterator();
+                }
+
+                FilterWrapper<Product> filter = FilterWrapper.of(new Product(input));
+                filter.setLike(true);
+                filter.setCount(10);
+                List<Product> choices = productBean.getProducts(filter);
+                for (ProductSale sale : order.getProductSales()) {
+                    choices.remove(sale.getProduct());
+                }
+
+                return choices.iterator();
+            }
+
+            @Override
+            public <C> IConverter<C> getConverter(Class<C> type) {
+                return new IConverter<C>() {
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public C convertToObject(String value, Locale locale) {
+                        FilterWrapper<Product> filter = FilterWrapper.of(new Product(value));
+                        filter.setLike(false);
+                        filter.setCount(1);
+                        List<Product> products = productBean.getProducts(filter);
+                        return products.size() > 0? (C)products.get(0) : null;
+                    }
+
+                    @Override
+                    public String convertToString(C value, Locale locale) {
+                        return value != null? ((Product)value).getCode(): "";
+                    }
+                };
+            }
+        };
+        container.add(productField);
+
+        final NumberTextField<Integer> countField = new NumberTextField<Integer>("count") {
+            @SuppressWarnings("unchecked")
+            @Override
+            public <C> IConverter<C> getConverter(Class<C> type) {
+                return (IConverter<C>) INTEGER_CONVERTER;
+            }
+
+        };
+        countField.setMinimum(1);
+        countField.setMaximum(Integer.MAX_VALUE);
+        countField.setRequired(true);
+        container.add(countField);
+
+        final IModel<String> productSaleButtonLabel = new Model<>(getString("add"));
+
+        final AjaxLink cancelProductSaleButton = new AjaxLink("cancelProductSaleButton") {
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+
+                saleModel.setObject(new ProductSale(1));
+                productSaleButtonLabel.setObject(getString("add"));
+
+                productField.setEnabled(true);
+
+                setVisible(false);
+
+                target.add(container);
+            }
+        };
+        cancelProductSaleButton.setVisible(false);
+        container.add(cancelProductSaleButton);
+        
+        container.add(new AjaxButton("addProductSaleButton", productSaleButtonLabel) {
+
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                super.onSubmit(target, form);
+
+                boolean hasErrors = false;
+                boolean edit = true;
+
+                ProductSale sale = saleModel.getObject();
+
+                if (sale.getProduct() == null) {
+                    productField.validate();
+                    productField.updateModel();
+                    edit = false;
+                }
+
+                countField.validate();
+                countField.updateModel();
+
+
+                if (sale.getProduct() == null) {
+                    form.error("Product is required field");
+                    hasErrors = true;
+                }
+                if (sale.getCount() <= 0) {
+                    form.error("Count product is required field");
+                    hasErrors = true;
+                }
+                if (!hasErrors) {
+                    if (sale.getPrice() == null || sale.getPrice().doubleValue() <= 0) {
+                        sale.setPrice(sale.getProduct().getPrice());
+                    }
+                    sale.setTotalCost(sale.getPrice().multiply(new BigDecimal(sale.getCount())));
+
+                    saleModel.setObject(new ProductSale(1));
+                    productSaleButtonLabel.setObject(getString("add"));
+
+                    if (edit) {
+                        productField.setEnabled(true);
+                        cancelProductSaleButton.setVisible(false);
+                    } else {
+                        order.getProductSales().add(sale);
+                    }
+                }
+                target.add(container);
+            }
+        }.setDefaultFormProcessing(false));
 
         //Data Provider
         final DataProvider<ProductSale> dataProvider = new DataProvider<ProductSale>() {
@@ -309,114 +446,32 @@ public class OrderEdit extends FormTemplatePage {
                     }
                 }));
                 item.add(deleteLink);
+
+                AjaxLink editLink = new AjaxLink("editProductSaleLink") {
+
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+
+                        saleModel.setObject(sale);
+
+                        productSaleButtonLabel.setObject(getString("edit"));
+                        cancelProductSaleButton.setVisible(true);
+                        productField.setEnabled(false);
+
+                        target.add(container);
+                    }
+                };
+                editLink.add(new Label("editProductSaleMessage", new AbstractReadOnlyModel<String>() {
+
+                    @Override
+                    public String getObject() {
+                        return getString("edit");
+                    }
+                }));
+                item.add(editLink);
             }
         };
         container.add(dataView);
-
-        final IModel<Product> productModel = new Model<>();
-        final IModel<Integer> countModel = new Model<>(1);
-
-        final AutoCompleteTextField<Product> productField = new AutoCompleteTextField<Product>("product",
-                productModel
-                , Product.class
-                , new AbstractAutoCompleteTextRenderer<Product>() {
-            @Override
-            protected String getTextValue(Product object) {
-                return object.getCode();
-            }
-        }
-                , new AutoCompleteSettings()
-        ) {
-            @Override
-            protected Iterator<Product> getChoices(String input)
-            {
-                if (Strings.isEmpty(input)) {
-                    List<Product> emptyList = Collections.emptyList();
-                    return emptyList.iterator();
-                }
-
-                FilterWrapper<Product> filter = FilterWrapper.of(new Product(input));
-                filter.setLike(true);
-                filter.setCount(10);
-                List<Product> choices = productBean.getProducts(filter);
-                for (ProductSale sale : order.getProductSales()) {
-                    choices.remove(sale.getProduct());
-                }
-
-                return choices.iterator();
-            }
-
-            @Override
-            public <C> IConverter<C> getConverter(Class<C> type) {
-                return new IConverter<C>() {
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public C convertToObject(String value, Locale locale) {
-                        FilterWrapper<Product> filter = FilterWrapper.of(new Product(value));
-                        filter.setLike(false);
-                        filter.setCount(1);
-                        List<Product> products = productBean.getProducts(filter);
-                        return products.size() > 0? (C)products.get(0) : null;
-                    }
-
-                    @Override
-                    public String convertToString(C value, Locale locale) {
-                        return value != null? ((Product)value).getCode(): "";
-                    }
-                };
-            }
-        };
-        productField.setRequired(true);
-        container.add(productField);
-
-        final NumberTextField<Integer> countField = new NumberTextField<Integer>("count", countModel, Integer.class) {
-            @SuppressWarnings("unchecked")
-            @Override
-            public <C> IConverter<C> getConverter(Class<C> type) {
-                return (IConverter<C>) INTEGER_CONVERTER;
-            }
-
-        };
-        countField.setMinimum(1);
-        countField.setMaximum(Integer.MAX_VALUE);
-        countField.setRequired(true);
-        container.add(countField);
-        
-        container.add(new AjaxButton("addProductSaleButton") {
-
-
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                boolean hasErrors = false;
-
-                countField.validate();
-                countField.updateModel();
-
-                productField.validate();
-                productField.updateModel();
-
-                if (productModel.getObject() == null) {
-                    form.error("Product is required field");
-                    hasErrors = true;
-                }
-                if (countModel.getObject() == null) {
-                    form.error("Count product is required field");
-                    hasErrors = true;
-                }
-                if (!hasErrors) {
-                    ProductSale sale = new ProductSale();
-                    sale.setCount(countModel.getObject());
-                    sale.setProduct(productModel.getObject());
-                    sale.setPrice(productModel.getObject().getPrice());
-                    sale.setTotalCost(sale.getPrice().multiply(new BigDecimal(sale.getCount())));
-
-                    countModel.setObject(1);
-
-                    order.getProductSales().add(sale);
-                }
-                target.add(container);
-            }
-        }.setDefaultFormProcessing(false));
 
         //history
         //Data Provider
