@@ -2,6 +2,7 @@ package ru.complitex.salelog.order.web.edit;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -472,6 +473,25 @@ public class OrderEdit extends FormTemplatePage {
             }
         };
         container.add(dataView);
+
+        container.add(new Label("orderTotalCost", new IModel<String>() {
+            @Override
+            public String getObject() {
+                BigDecimal orderTotalCost = new BigDecimal(0);
+                for (ProductSale sale : order.getProductSales()) {
+                    orderTotalCost = orderTotalCost.add(sale.getTotalCost());
+                }
+                return BIG_DECIMAL_CONVERTER.convertToString(orderTotalCost, getLocale());
+            }
+
+            @Override
+            public void setObject(String object) {
+            }
+
+            @Override
+            public void detach() {
+            }
+        }));
 
         //history
         //Data Provider
