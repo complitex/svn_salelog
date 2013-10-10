@@ -2,31 +2,26 @@ package ru.complitex.salelog.order.web.edit;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.*;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.convert.converter.IntegerConverter;
-import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.Strings;
-import org.apache.wicket.util.value.IValueMap;
 import org.complitex.address.strategy.region.RegionStrategy;
 import org.complitex.dictionary.converter.BigDecimalConverter;
 import org.complitex.dictionary.entity.DomainObject;
@@ -35,7 +30,7 @@ import org.complitex.dictionary.entity.Person;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.template.web.security.SecurityRole;
-import org.complitex.template.web.template.FormTemplatePage;
+import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.salelog.entity.CallGirl;
@@ -60,9 +55,9 @@ import java.util.*;
  * @author Pavel Sknar
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
-public class OrderEdit extends FormTemplatePage {
+public class OrderEditPanel extends Panel {
 
-    private static final Logger log = LoggerFactory.getLogger(OrderEdit.class);
+    private static final Logger log = LoggerFactory.getLogger(OrderEditPanel.class);
 
     private static final BigDecimalConverter BIG_DECIMAL_CONVERTER = new BigDecimalConverter(2);
 
@@ -86,42 +81,45 @@ public class OrderEdit extends FormTemplatePage {
 
     private List<Order> history = Lists.newArrayList();
 
-    public OrderEdit() {
-        init();
-    }
+    private final Dialog dialog;
 
-    public OrderEdit(PageParameters parameters) {
-        StringValue orderId = parameters.get("orderId");
-        if (orderId != null && !orderId.isNull()) {
-            history = orderBean.getOrder(orderId.toLong());
-            if (history.size() <= 0) {
-                throw new RuntimeException("Order by id='" + orderId + "' not found");
+    private WebMarkupContainer content;
+
+    public OrderEditPanel(String id, IModel<String> title) {
+        super(id);
+
+
+
+        dialog = new Dialog("dialog") {
+
+            {
+                getOptions().putLiteral("width", "auto");
             }
-            order = history.remove(0);
-        }
+        };
+        dialog.setModal(true);
+        dialog.setMinHeight(100);
+        dialog.setTitle(title);
+        add(dialog);
+
         init();
     }
 
     private void init() {
+        order = new Order();
+        order.setCallGirl(new CallGirl());
+        order.setStatus(OrderStatus.EMPTY);
+        order.setCustomer(new Person());
 
-        if (order == null) {
-            order = new Order();
-            order.setCallGirl(new CallGirl());
-            order.setStatus(OrderStatus.EMPTY);
-            order.setCustomer(new Person());
-        }
-
-        IModel<String> labelModel = new ResourceModel("label");
-
-        add(new Label("title", labelModel));
-        add(new Label("label", labelModel));
+        content = new WebMarkupContainer("content");
+        content.setOutputMarkupId(true);
+        dialog.add(content);
 
         final FeedbackPanel messages = new FeedbackPanel("messages");
         messages.setOutputMarkupId(true);
-        add(messages);
+        content.add(messages);
 
         final Form form = new Form("form");
-        add(form);
+        content.add(form);
 
         // call girl`s code
         final AutoCompleteTextField<CallGirl> callGirlField = new AutoCompleteTextField<CallGirl>("callGirl",
@@ -190,15 +188,90 @@ public class OrderEdit extends FormTemplatePage {
         form.add(callGirlField);
 
         // customer FIO
-        form.add(new TextField<>("lastName",   new PropertyModel<String>(order.getCustomer(), "lastName")).setRequired(true));
-        form.add(new TextField<>("firstName",  new PropertyModel<String>(order.getCustomer(), "firstName")).setRequired(true));
-        form.add(new TextField<>("middleName", new PropertyModel<String>(order.getCustomer(), "middleName")));
+        form.add(new TextField<>("lastName", new IModel<String>() {
+            @Override
+            public String getObject() {
+                return order.getCustomer().getLastName();
+            }
+
+            @Override
+            public void setObject(String object) {
+                order.getCustomer().setLastName(object);
+            }
+
+            @Override
+            public void detach() {
+            }
+
+        }).setRequired(true));
+        form.add(new TextField<>("firstName",  new IModel<String>() {
+            @Override
+            public String getObject() {
+                return order.getCustomer().getFirstName();
+            }
+
+            @Override
+            public void setObject(String object) {
+                order.getCustomer().setFirstName(object);
+            }
+
+            @Override
+            public void detach() {
+            }
+
+        }).setRequired(true));
+        form.add(new TextField<>("middleName", new IModel<String>() {
+            @Override
+            public String getObject() {
+                return order.getCustomer().getMiddleName();
+            }
+
+            @Override
+            public void setObject(String object) {
+                order.getCustomer().setMiddleName(object);
+            }
+
+            @Override
+            public void detach() {
+            }
+
+        }));
 
         // phones
-        form.add(new TextField<>("phones", new PropertyModel<String>(order, "phones")).setRequired(true));
+        form.add(new TextField<>("phones", new IModel<String>() {
+            @Override
+            public String getObject() {
+                return order.getPhones();
+            }
+
+            @Override
+            public void setObject(String object) {
+                order.setPhones(object);
+            }
+
+            @Override
+            public void detach() {
+            }
+
+        }).setRequired(true));
 
         // address
-        form.add(new TextField<>("address", new PropertyModel<String>(order, "address")).setRequired(true));
+        form.add(new TextField<>("address", new IModel<String>() {
+            @Override
+            public String getObject() {
+                return order.getAddress();
+            }
+
+            @Override
+            public void setObject(String object) {
+                order.setAddress(object);
+            }
+
+            @Override
+            public void detach() {
+            }
+
+        }).setRequired(true));
 
         // region
         form.add(new DropDownChoice<>("region",
@@ -233,7 +306,22 @@ public class OrderEdit extends FormTemplatePage {
         ).setRequired(true));
 
         // comment
-        form.add(new TextField<>("comment", new PropertyModel<String>(order, "comment")));
+        form.add(new TextField<>("comment", new IModel<String>() {
+            @Override
+            public String getObject() {
+                return order.getComment();
+            }
+
+            @Override
+            public void setObject(String object) {
+                order.setComment(object);
+            }
+
+            @Override
+            public void detach() {
+            }
+
+        }));
 
         form.add(new DropDownChoice<>("status",
                 new IModel<OrderStatus>() {
@@ -538,9 +626,9 @@ public class OrderEdit extends FormTemplatePage {
 
                 final Map<ProductSale, Boolean> changed = Maps.newHashMap();
                 for (ProductSale sale : order.getProductSales()) {
-                    changed.put(sale, !OrderEdit.this.order.getProductSales().contains(sale));
+                    changed.put(sale, !OrderEditPanel.this.order.getProductSales().contains(sale));
                 }
-                for (ProductSale sale : OrderEdit.this.order.getProductSales()) {
+                for (ProductSale sale : OrderEditPanel.this.order.getProductSales()) {
                     changed.put(sale, !order.getProductSales().contains(sale));
                 }
 
@@ -601,7 +689,7 @@ public class OrderEdit extends FormTemplatePage {
             }
         };
 
-        add(historyView);
+        content.add(historyView);
 
         // save button
         Button save = new Button("save") {
@@ -627,6 +715,27 @@ public class OrderEdit extends FormTemplatePage {
             }
         };
         form.add(cancel);
+    }
+
+    private void initData(Long orderId) {
+        if (orderId != null) {
+            history = orderBean.getOrder(orderId);
+            if (history.size() <= 0) {
+                throw new RuntimeException("Order by id='" + orderId + "' not found");
+            }
+            order = history.remove(0);
+        } else {
+            order = new Order();
+            order.setCallGirl(new CallGirl());
+            order.setStatus(OrderStatus.EMPTY);
+            order.setCustomer(new Person());
+        }
+    }
+
+    public void open(AjaxRequestTarget target, Long orderId) {
+        initData(orderId);
+        target.add(content);
+        dialog.open(target);
     }
 
 }

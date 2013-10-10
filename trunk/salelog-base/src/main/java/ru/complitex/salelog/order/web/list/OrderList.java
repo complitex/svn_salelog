@@ -39,7 +39,7 @@ import ru.complitex.salelog.order.entity.Order;
 import ru.complitex.salelog.order.entity.OrderStatus;
 import ru.complitex.salelog.order.entity.ProductSale;
 import ru.complitex.salelog.order.service.OrderBean;
-import ru.complitex.salelog.order.web.edit.OrderEdit;
+import ru.complitex.salelog.order.web.edit.OrderEditPanel;
 import ru.complitex.salelog.service.CallGirlBean;
 import ru.complitex.salelog.service.ProductBean;
 
@@ -72,6 +72,8 @@ public class OrderList extends TemplatePage {
 
     @EJB
     private RegionStrategy regionStrategy;
+
+    private OrderEditPanel createPanel;
 
     public OrderList() {
         init();
@@ -189,9 +191,12 @@ public class OrderList extends TemplatePage {
                     }
                 });
 
-                ScrollBookmarkablePageLink<WebPage> detailsLink = new ScrollBookmarkablePageLink<>("detailsLink",
-                        getEditPage(), getEditPageParams(order.getId()),
-                        String.valueOf(order.getId()));
+                AjaxLink detailsLink = new AjaxLink("detailsLink") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        createPanel.open(target, order.getId());
+                    }
+                };
                 detailsLink.add(new Label("editMessage", new AbstractReadOnlyModel<String>() {
 
                     @Override
@@ -326,6 +331,9 @@ public class OrderList extends TemplatePage {
         //Navigator
         container.add(new PagingNavigator("navigator", dataView, getPreferencesPage(), container));
 
+        createPanel = new OrderEditPanel("orderCreate", new Model<>(getString("order")));
+        container.add(createPanel);
+
     }
 
     private Order getFilterObject() {
@@ -337,17 +345,13 @@ public class OrderList extends TemplatePage {
 
     @Override
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
-        return ImmutableList.of(new AddItemButton(id) {
+        return ImmutableList.of(new AddItemButton(id, true) {
 
             @Override
-            protected void onClick() {
-                this.getPage().setResponsePage(getEditPage(), getEditPageParams(null));
+            protected void onClick(AjaxRequestTarget target) {
+                createPanel.open(target, null);
             }
         });
-    }
-
-    private Class<? extends Page> getEditPage() {
-        return OrderEdit.class;
     }
 
     private PageParameters getEditPageParams(Long id) {
