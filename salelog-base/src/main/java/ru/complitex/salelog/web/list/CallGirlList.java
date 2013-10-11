@@ -25,11 +25,11 @@ import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.dictionary.web.component.scroll.ScrollBookmarkablePageLink;
 import org.complitex.template.web.component.toolbar.AddItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
-import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 import ru.complitex.salelog.entity.CallGirl;
 import ru.complitex.salelog.service.CallGirlBean;
 import ru.complitex.salelog.web.edit.CallGirlEdit;
+import ru.complitex.salelog.web.security.SecurityRole;
 
 import javax.ejb.EJB;
 import java.util.List;
@@ -39,7 +39,7 @@ import static org.complitex.dictionary.util.PageUtil.newSorting;
 /**
  * @author Pavel Sknar
  */
-@AuthorizeInstantiation(SecurityRole.AUTHORIZED)
+@AuthorizeInstantiation(SecurityRole.CALL_GIRL_VIEW)
 public class CallGirlList extends TemplatePage {
 
     @EJB

@@ -7,12 +7,10 @@
         <role-name>AUTHORIZED</role-name>
         <group-name>ADMINISTRATORS</group-name>
         <group-name>EMPLOYEES</group-name>
-        <group-name>EMPLOYEES_CHILD_VIEW</group-name>
     </security-role-mapping>
     <security-role-mapping>
         <role-name>INFO_PANEL_ALLOWED</role-name>
         <group-name>ADMINISTRATORS</group-name>
-        <group-name>EMPLOYEES_CHILD_VIEW</group-name>
     </security-role-mapping>
     <security-role-mapping>
         <role-name>ADMIN_MODULE_EDIT</role-name>
@@ -20,7 +18,6 @@
     </security-role-mapping>
     <security-role-mapping>
         <role-name>ADDRESS_MODULE_VIEW</role-name>
-        <group-name>EMPLOYEES_CHILD_VIEW</group-name>
         <group-name>EMPLOYEES</group-name>
         <group-name>ADMINISTRATORS</group-name>
     </security-role-mapping>
@@ -28,56 +25,39 @@
         <role-name>ADDRESS_MODULE_EDIT</role-name>
         <group-name>ADMINISTRATORS</group-name>
     </security-role-mapping>
+
+    <!-- Salelog mappings -->
+
     <security-role-mapping>
-        <role-name>APARTMENT_EDIT</role-name>
-        <group-name>EMPLOYEES_CHILD_VIEW</group-name>
+        <role-name>CALL_GIRL_VIEW</role-name>
+        <group-name>ADMINISTRATORS</group-name>
     </security-role-mapping>
+
     <security-role-mapping>
-        <role-name>ROOM_EDIT</role-name>
-        <group-name>EMPLOYEES_CHILD_VIEW</group-name>
+        <role-name>CALL_GIRL_EDIT</role-name>
+        <group-name>ADMINISTRATORS</group-name>
     </security-role-mapping>
+
     <security-role-mapping>
-        <role-name>ORGANIZATION_MODULE_VIEW</role-name>
-        <group-name>EMPLOYEES_CHILD_VIEW</group-name>
+        <role-name>PRODUCT_VIEW</role-name>
+        <group-name>ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PRODUCT_EDIT</role-name>
+        <group-name>ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ORDER_VIEW</role-name>
         <group-name>ADMINISTRATORS</group-name>
         <group-name>EMPLOYEES</group-name>
     </security-role-mapping>
+
     <security-role-mapping>
-        <role-name>ORGANIZATION_MODULE_EDIT</role-name>
+        <role-name>ORDER_EDIT</role-name>
         <group-name>ADMINISTRATORS</group-name>
-    </security-role-mapping>
-    <security-role-mapping>
-        <role-name>CHILD_ORGANIZATION_VIEW</role-name>
-        <group-name>EMPLOYEES_CHILD_VIEW</group-name>
-    </security-role-mapping>
-  
-  
-  <!-- Psp related mappings -->
-  
-    <security-role-mapping>
-        <role-name>PERSON_MODULE_VIEW</role-name>
-        <group-name>EMPLOYEES_CHILD_VIEW</group-name>
-        <group-name>ADMINISTRATORS</group-name>
-    </security-role-mapping>
-    <security-role-mapping>
-        <role-name>PERSON_MODULE_EDIT</role-name>
         <group-name>EMPLOYEES</group-name>
-        <group-name>EMPLOYEES_CHILD_VIEW</group-name>
-        <group-name>ADMINISTRATORS</group-name>
     </security-role-mapping>
-    <security-role-mapping>
-        <role-name>PERSON_MODULE_DESCRIPTION_EDIT</role-name>
-        <group-name>ADMINISTRATORS</group-name>
-    </security-role-mapping>
-    
-    <security-role-mapping>
-        <role-name>REFERENCE_DATA_MODULE_VIEW</role-name>
-        <group-name>EMPLOYEES_CHILD_VIEW</group-name>
-        <group-name>ADMINISTRATORS</group-name>
-    </security-role-mapping>
-    <security-role-mapping>
-        <role-name>REFERENCE_DATA_MODULE_EDIT</role-name>
-        <group-name>ADMINISTRATORS</group-name>
-    </security-role-mapping>
-  
+
 </glassfish-web-app>

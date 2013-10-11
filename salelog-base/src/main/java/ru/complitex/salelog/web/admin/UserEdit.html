@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <wicket:head><title wicket:id="title"></title></wicket:head>
+</head>
+
+<body>
+<wicket:extend>
+    <h2><wicket:message key="title"/></h2>
+
+    <div id="messages" wicket:id="messages"></div>
+
+    <form wicket:id="form">
+
+        <div>
+            <table class="tbForm">
+                <tbody>
+                <tr>
+                    <th><label for="login"><wicket:message key="login"/><b class="blue">*</b>:</label></th>
+                    <td><input id="login" wicket:id="login" type="text"/></td>
+                </tr>
+                <tr>
+                    <th><label for="password"><wicket:message key="password"/>:</label></th>
+                    <td><input id="password" wicket:id="password" type="password"/></td>
+                </tr>
+                <tr>
+                    <th><wicket:message key="locale"/>:</th>
+                    <td><div wicket:id="locale"></div></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div wicket:id="user_info"></div>
+        </div>
+
+        <div>
+            <table class="tbForm">
+                <tbody>
+                <tr>
+                    <th><wicket:message key="usergroup"/>:</th>
+                    <td>
+                        <div wicket:id="usergroups">
+                            <ul>
+                                <li>
+                                    <input type="checkbox" wicket:id="ADMINISTRATORS"/>
+                                    <wicket:message key="ADMINISTRATORS"/>
+                                </li>
+                                <li>
+                                    <input type="checkbox" wicket:id="EMPLOYEES"/>
+                                    <wicket:message key="EMPLOYEES"/>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="padding-top: 20px">
+            <input type="submit" class="btnMiddle" wicket:message="value:save" wicket:id="save"/>
+            <input type="button" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>
+        </div>
+
+
+
+    </form>
+</wicket:extend>
+</body>
+</html>

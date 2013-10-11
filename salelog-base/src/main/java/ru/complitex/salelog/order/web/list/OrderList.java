@@ -2,14 +2,12 @@ package ru.complitex.salelog.order.web.list;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
-import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -29,10 +27,8 @@ import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.web.component.DatePicker;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.dictionary.web.component.scroll.ScrollBookmarkablePageLink;
 import org.complitex.template.web.component.toolbar.AddItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
-import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 import ru.complitex.salelog.entity.CallGirl;
 import ru.complitex.salelog.order.entity.Order;
@@ -42,6 +38,7 @@ import ru.complitex.salelog.order.service.OrderBean;
 import ru.complitex.salelog.order.web.edit.OrderEditPanel;
 import ru.complitex.salelog.service.CallGirlBean;
 import ru.complitex.salelog.service.ProductBean;
+import ru.complitex.salelog.web.security.SecurityRole;
 
 import javax.ejb.EJB;
 import java.text.SimpleDateFormat;
@@ -54,7 +51,7 @@ import static org.complitex.dictionary.util.PageUtil.newSorting;
 /**
  * @author Pavel Sknar
  */
-@AuthorizeInstantiation(SecurityRole.AUTHORIZED)
+@AuthorizeInstantiation(SecurityRole.ORDER_VIEW)
 public class OrderList extends TemplatePage {
 
     private static final SimpleDateFormat CREATE_DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");

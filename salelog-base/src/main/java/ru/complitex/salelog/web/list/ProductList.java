@@ -28,12 +28,12 @@ import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.dictionary.web.component.scroll.ScrollBookmarkablePageLink;
 import org.complitex.template.web.component.toolbar.AddItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
-import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 import ru.complitex.salelog.entity.Product;
 import ru.complitex.salelog.service.ProductBean;
 import ru.complitex.salelog.web.component.NumberTextField;
 import ru.complitex.salelog.web.edit.ProductEdit;
+import ru.complitex.salelog.web.security.SecurityRole;
 
 import javax.ejb.EJB;
 import java.math.BigDecimal;
@@ -44,7 +44,7 @@ import static org.complitex.dictionary.util.PageUtil.newSorting;
 /**
  * @author Pavel Sknar
  */
-@AuthorizeInstantiation(SecurityRole.AUTHORIZED)
+@AuthorizeInstantiation(SecurityRole.PRODUCT_VIEW)
 public class ProductList extends TemplatePage {
 
     private static final BigDecimalConverter converter = new BigDecimalConverter(2);

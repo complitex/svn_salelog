@@ -29,7 +29,6 @@ import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.entity.Person;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
-import org.complitex.template.web.security.SecurityRole;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +44,7 @@ import ru.complitex.salelog.service.ProductBean;
 import ru.complitex.salelog.util.HistoryUtils;
 import ru.complitex.salelog.web.component.LabelHistory;
 import ru.complitex.salelog.web.component.NumberTextField;
+import ru.complitex.salelog.web.security.SecurityRole;
 
 import javax.ejb.EJB;
 import java.math.BigDecimal;
@@ -54,7 +54,7 @@ import java.util.*;
 /**
  * @author Pavel Sknar
  */
-@AuthorizeInstantiation(SecurityRole.AUTHORIZED)
+@AuthorizeInstantiation(SecurityRole.ORDER_EDIT)
 public class OrderEditPanel extends Panel {
 
     private static final Logger log = LoggerFactory.getLogger(OrderEditPanel.class);
