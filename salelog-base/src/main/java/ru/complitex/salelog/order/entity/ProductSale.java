@@ -10,7 +10,7 @@ import java.math.BigDecimal;
  */
 public class ProductSale extends DictionaryTemporalObject {
     private Product product;
-    private int count;
+    private Integer count;
     private BigDecimal price;
     private BigDecimal totalCost;
     private Long orderId;
@@ -30,11 +30,11 @@ public class ProductSale extends DictionaryTemporalObject {
         this.product = product;
     }
 
-    public int getCount() {
+    public Integer getCount() {
         return count;
     }
 
-    public void setCount(int count) {
+    public void setCount(Integer count) {
         this.count = count;
     }
 
