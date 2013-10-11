@@ -86,6 +86,7 @@ public class OrderEditPanel extends Panel {
     private final Dialog dialog;
 
     private WebMarkupContainer content;
+    private WebMarkupContainer container;
 
     private Map<Order, Set<String>> changed = Maps.newHashMap();
 
@@ -364,7 +365,7 @@ public class OrderEditPanel extends Panel {
 
         saleModel = new CompoundPropertyModel<>(new ProductSale(1));
 
-        final WebMarkupContainer container = new WebMarkupContainer("container", saleModel);
+        container = new WebMarkupContainer("container", saleModel);
         container.setOutputMarkupPlaceholderTag(true);
         container.setVisible(true);
         form.add(container);
@@ -474,12 +475,11 @@ public class OrderEditPanel extends Panel {
 
 
                 if (sale.getProduct() == null) {
-                    form.error("Product is required field");
                     hasErrors = true;
                 }
-                if (sale.getCount() <= 0) {
-                    form.error("Count product is required field");
+                if (sale.getCount() == null) {
                     hasErrors = true;
+                    sale.setCount(1);
                 }
                 if (!hasErrors) {
                     if (sale.getPrice() == null || sale.getPrice().doubleValue() <= 0) {
@@ -714,6 +714,10 @@ public class OrderEditPanel extends Panel {
 
                 initData(null);
 
+                saleModel.getObject().setProduct(null);
+                saleModel.getObject().setCount(1);
+                target.add(container);
+
                 target.add(content);
 
                 updateCallBack.update(target);
@@ -738,9 +742,6 @@ public class OrderEditPanel extends Panel {
                 getSession().getFeedbackMessages().clear(new ComponentFeedbackMessageFilter(form));
                 form.clearInput();
                 form.process(null);
-
-                saleModel.getObject().setCount(1);
-                target.add(container);
 
                 dialog.close(target);
             }
@@ -774,6 +775,11 @@ public class OrderEditPanel extends Panel {
         if (target != null) {
             initData(orderId);
             target.add(content);
+
+            saleModel.getObject().setProduct(null);
+            saleModel.getObject().setCount(1);
+            target.add(container);
+
             dialog.open(target);
         } else {
             dialog.setAutoOpen(true);
