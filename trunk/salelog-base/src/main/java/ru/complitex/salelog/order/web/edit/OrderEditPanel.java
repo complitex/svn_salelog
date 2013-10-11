@@ -11,6 +11,7 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCo
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.feedback.ComponentFeedbackMessageFilter;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
@@ -733,6 +734,14 @@ public class OrderEditPanel extends Panel {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
+                getSession().getFeedbackMessages().clear();
+                getSession().getFeedbackMessages().clear(new ComponentFeedbackMessageFilter(form));
+                form.clearInput();
+                form.process(null);
+
+                saleModel.getObject().setCount(1);
+                target.add(container);
+
                 dialog.close(target);
             }
         };
