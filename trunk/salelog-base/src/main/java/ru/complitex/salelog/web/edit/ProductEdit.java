@@ -16,7 +16,6 @@ import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.StringValue;
 import org.complitex.dictionary.converter.BigDecimalConverter;
 import org.complitex.dictionary.entity.FilterWrapper;
-import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +23,7 @@ import ru.complitex.salelog.entity.Product;
 import ru.complitex.salelog.service.ProductBean;
 import ru.complitex.salelog.web.component.NumberTextField;
 import ru.complitex.salelog.web.list.ProductList;
+import ru.complitex.salelog.web.security.SecurityRole;
 
 import javax.ejb.EJB;
 import java.math.BigDecimal;
@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * @author Pavel Sknar
  */
-@AuthorizeInstantiation(SecurityRole.AUTHORIZED)
+@AuthorizeInstantiation(SecurityRole.PRODUCT_EDIT)
 public class ProductEdit extends FormTemplatePage {
     private static final BigDecimalConverter converter = new BigDecimalConverter(2);
 

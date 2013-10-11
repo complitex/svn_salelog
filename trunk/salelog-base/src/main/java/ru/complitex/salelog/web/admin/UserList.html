@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+    <head>
+        <wicket:head><title wicket:id="title"></title></wicket:head>
+    </head>
+
+    <body>
+        <wicket:extend>
+            <h1><wicket:message key="title"/></h1>
+            <div wicket:id="content" style="margin-top: 20px;">
+                <form action="#" wicket:id="filter_form">
+                    <table  border="0" cellspacing="0" cellpadding="0" class="tbColor">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <span wicket:id="header.login">
+                                        <wicket:message key="login"/>
+                                    </span>
+                                </th>
+                                <wicket:container wicket:id="header.user_info"/>
+                                <th>
+                                    <wicket:message key="usergroup"/>
+                                </th>
+                                <th>
+                                    <input class="btnSmall"  wicket:id="reset" type="button" wicket:message="value:reset"/>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td class="filter-td">
+                                    <input type="text" wicket:id="login"/>
+                                </td>
+                                <wicket:container wicket:id="user_info"/>
+                                <td class="filter-td">
+                                    <select wicket:id="usergroups"></select>
+                                </td>
+                                <td class="filter-td">
+                                    <input class="btnSmall" type="submit" wicket:id="submit" wicket:message="value:filter"/>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr wicket:id="users">
+                                <td><span wicket:id="login"></span></td>
+                                <wicket:container wicket:id="user_info"/>
+                                <td><span wicket:id="usergroup"></span></td>
+                                <td>
+                                    <span wicket:id="action_edit"></span>
+                                    <span wicket:id="action_copy"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+                <div wicket:id="navigator"></div>
+            </div>
+        </wicket:extend>
+    </body>
+</html>

@@ -1,6 +1,5 @@
 package ru.complitex.salelog.web.edit;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -14,14 +13,13 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.complitex.dictionary.entity.FilterWrapper;
-import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.salelog.entity.CallGirl;
-import ru.complitex.salelog.entity.Product;
 import ru.complitex.salelog.service.CallGirlBean;
 import ru.complitex.salelog.web.list.CallGirlList;
+import ru.complitex.salelog.web.security.SecurityRole;
 
 import javax.ejb.EJB;
 import java.text.MessageFormat;
@@ -30,7 +28,7 @@ import java.util.List;
 /**
  * @author Pavel Sknar
  */
-@AuthorizeInstantiation(SecurityRole.AUTHORIZED)
+@AuthorizeInstantiation(SecurityRole.CALL_GIRL_EDIT)
 public class CallGirlEdit extends FormTemplatePage {
 
     @EJB

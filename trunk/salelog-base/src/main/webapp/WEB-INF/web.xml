@@ -38,38 +38,27 @@
     <security-role>
         <role-name>ADDRESS_MODULE_EDIT</role-name>
     </security-role>
+
+
     <security-role>
-        <role-name>APARTMENT_EDIT</role-name>
+        <role-name>CALL_GIRL_EDIT</role-name>
     </security-role>
     <security-role>
-        <role-name>ROOM_EDIT</role-name>
-    </security-role>
-    
-    <security-role>
-        <role-name>ORGANIZATION_MODULE_VIEW</role-name>
-    </security-role>
-    <security-role>
-        <role-name>ORGANIZATION_MODULE_EDIT</role-name>
+        <role-name>CALL_GIRL_VIEW</role-name>
     </security-role>
 
     <security-role>
-        <role-name>PERSON_MODULE_VIEW</role-name>
+        <role-name>PRODUCT_EDIT</role-name>
     </security-role>
     <security-role>
-        <role-name>PERSON_MODULE_EDIT</role-name>
+        <role-name>PRODUCT_VIEW</role-name>
+    </security-role>
+
+    <security-role>
+        <role-name>ORDER_EDIT</role-name>
     </security-role>
     <security-role>
-        <role-name>PERSON_MODULE_DESCRIPTION_EDIT</role-name>
-    </security-role>
-    <security-role>
-        <role-name>CHILD_ORGANIZATION_VIEW</role-name>
-    </security-role>
-    
-    <security-role>
-        <role-name>REFERENCE_DATA_MODULE_VIEW</role-name>
-    </security-role>
-    <security-role>
-        <role-name>REFERENCE_DATA_MODULE_EDIT</role-name>
+        <role-name>ORDER_VIEW</role-name>
     </security-role>
 
     <login-config>
