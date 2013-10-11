@@ -85,14 +85,14 @@ public class OrderList extends TemplatePage {
         add(new Label("title", labelModel));
         add(new Label("label", labelModel));
 
-        final FeedbackPanel messages = new FeedbackPanel("messages");
-        messages.setOutputMarkupId(true);
-        add(messages);
-
         final WebMarkupContainer container = new WebMarkupContainer("container");
         container.setOutputMarkupPlaceholderTag(true);
         container.setVisible(true);
         add(container);
+
+        final FeedbackPanel messages = new FeedbackPanel("messages");
+        messages.setOutputMarkupId(true);
+        container.add(messages);
 
         //Form
         final Form<Order> filterForm = new Form<>("filterForm", filterModel);
@@ -113,7 +113,9 @@ public class OrderList extends TemplatePage {
 
             @Override
             protected int getSize() {
-                FilterWrapper<Order> filterWrapper = FilterWrapper.of(new Order());
+                FilterWrapper<Order> filterWrapper = FilterWrapper.of(filterModel.getObject());
+                filterWrapper.setLike(true);
+
                 return orderBean.count(filterWrapper);
             }
         };
@@ -328,8 +330,17 @@ public class OrderList extends TemplatePage {
         //Navigator
         container.add(new PagingNavigator("navigator", dataView, getPreferencesPage(), container));
 
-        createPanel = new OrderEditPanel("orderCreate", new Model<>(getString("order")));
-        container.add(createPanel);
+        createPanel = new OrderEditPanel("orderCreate", new Model<>(getString("order")), new OrderEditPanel.CallBack() {
+            @Override
+            public void update(AjaxRequestTarget target) {
+                target.add(container);
+            }
+        });
+        add(createPanel);
+
+        if (!getTemplateWebApplication().hasAnyRole(org.complitex.template.web.security.SecurityRole.ADMIN_MODULE_EDIT)) {
+            createPanel.open(null, null);
+        }
 
     }
 

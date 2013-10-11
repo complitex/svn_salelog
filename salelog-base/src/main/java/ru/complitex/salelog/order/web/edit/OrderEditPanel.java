@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
@@ -85,10 +86,16 @@ public class OrderEditPanel extends Panel {
 
     private WebMarkupContainer content;
 
-    public OrderEditPanel(String id, IModel<String> title) {
+    private Map<Order, Set<String>> changed = Maps.newHashMap();
+
+    private CallBack updateCallBack;
+
+    private IModel<ProductSale> saleModel;
+
+    public OrderEditPanel(String id, IModel<String> title, CallBack callBack) {
         super(id);
 
-
+        updateCallBack = callBack;
 
         dialog = new Dialog("dialog") {
 
@@ -354,7 +361,7 @@ public class OrderEditPanel extends Panel {
                 }
         ).setRequired(true));
 
-        final IModel<ProductSale> saleModel = new CompoundPropertyModel<>(new ProductSale(1));
+        saleModel = new CompoundPropertyModel<>(new ProductSale(1));
 
         final WebMarkupContainer container = new WebMarkupContainer("container", saleModel);
         container.setOutputMarkupPlaceholderTag(true);
@@ -598,7 +605,6 @@ public class OrderEditPanel extends Panel {
         };
         dataProvider.setSort("order_object_id", SortOrder.ASCENDING);
 
-        final Map<Order, Set<String>> changed = Maps.newHashMap();
         try {
             changed.putAll(HistoryUtils.getChangedFields(order, history));
         } catch (Exception e) {
@@ -692,26 +698,42 @@ public class OrderEditPanel extends Panel {
         content.add(historyView);
 
         // save button
-        Button save = new Button("save") {
+        AjaxSubmitLink save = new AjaxSubmitLink("save") {
 
             @Override
-            public void onSubmit() {
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+
+                if (order.getCallGirl() == null) {
+                    content.error(getString("error_code"));
+                    target.add(content);
+                    return;
+                }
 
                 orderBean.save(order);
 
+                initData(null);
+
+                target.add(content);
+
+                updateCallBack.update(target);
+
                 getSession().info(getString("saved"));
 
-                setResponsePage(OrderList.class);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                target.add(content);
             }
         };
         form.add(save);
 
         // cancel button
-        Link<String> cancel = new Link<String>("cancel") {
+        AjaxLink<String> cancel = new AjaxLink<String>("cancel") {
 
             @Override
-            public void onClick() {
-                setResponsePage(OrderList.class);
+            public void onClick(AjaxRequestTarget target) {
+                dialog.close(target);
             }
         };
         form.add(cancel);
@@ -729,13 +751,29 @@ public class OrderEditPanel extends Panel {
             order.setCallGirl(new CallGirl());
             order.setStatus(OrderStatus.EMPTY);
             order.setCustomer(new Person());
+            history.clear();
+        }
+        try {
+            changed.clear();
+            changed.putAll(HistoryUtils.getChangedFields(order, history));
+        } catch (Exception e) {
+            log.warn("Can get changed fields", e);
         }
     }
 
     public void open(AjaxRequestTarget target, Long orderId) {
-        initData(orderId);
-        target.add(content);
-        dialog.open(target);
+        if (target != null) {
+            initData(orderId);
+            target.add(content);
+            dialog.open(target);
+        } else {
+            dialog.setAutoOpen(true);
+            dialog.open();
+        }
+    }
+
+    public interface CallBack {
+        void update(AjaxRequestTarget target);
     }
 
 }
