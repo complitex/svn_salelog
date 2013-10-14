@@ -93,6 +93,7 @@ public class OrderEditPanel extends Panel {
     private CallBack updateCallBack;
 
     private IModel<ProductSale> saleModel;
+    private IModel<String> productSaleButtonLabel;
 
     public OrderEditPanel(String id, IModel<String> title, CallBack callBack) {
         super(id);
@@ -108,6 +109,7 @@ public class OrderEditPanel extends Panel {
         dialog.setModal(true);
         dialog.setMinHeight(100);
         dialog.setTitle(title);
+        dialog.setAutoOpen(true);
         add(dialog);
 
         init();
@@ -433,7 +435,7 @@ public class OrderEditPanel extends Panel {
         countField.setRequired(true);
         container.add(countField);
 
-        final IModel<String> productSaleButtonLabel = new Model<>(getString("add"));
+        productSaleButtonLabel = new Model<>(getString("add"));
 
         final AjaxLink cancelProductSaleButton = new AjaxLink("cancelProductSaleButton") {
 
@@ -714,8 +716,6 @@ public class OrderEditPanel extends Panel {
 
                 initData(null);
 
-                saleModel.getObject().setProduct(null);
-                saleModel.getObject().setCount(1);
                 target.add(container);
 
                 target.add(content);
@@ -763,6 +763,8 @@ public class OrderEditPanel extends Panel {
             order.setCustomer(new Person());
             history.clear();
         }
+        productSaleButtonLabel.setObject(getString("add"));
+        saleModel.setObject(new ProductSale(1));
         try {
             changed.clear();
             changed.putAll(HistoryUtils.getChangedFields(order, history));
@@ -776,13 +778,10 @@ public class OrderEditPanel extends Panel {
             initData(orderId);
             target.add(content);
 
-            saleModel.getObject().setProduct(null);
-            saleModel.getObject().setCount(1);
             target.add(container);
 
             dialog.open(target);
         } else {
-            dialog.setAutoOpen(true);
             dialog.open();
         }
     }
