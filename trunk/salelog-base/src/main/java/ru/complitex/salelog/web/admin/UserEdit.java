@@ -37,6 +37,7 @@ import java.util.Locale;
 
 import static org.complitex.dictionary.entity.UserGroup.GROUP_NAME.ADMINISTRATORS;
 import static org.complitex.dictionary.entity.UserGroup.GROUP_NAME.EMPLOYEES;
+import static org.complitex.dictionary.entity.UserGroup.GROUP_NAME.EMPLOYEES_CHILD_VIEW;
 import static org.complitex.dictionary.web.DictionaryFwSession.*;
 
 /**
@@ -149,8 +150,9 @@ public class UserEdit extends FormTemplatePage {
         CheckGroup<UserGroup> usergroups = new CheckGroup<UserGroup>("usergroups",
                 new PropertyModel<Collection<UserGroup>>(userModel, "userGroups"));
 
-        usergroups.add(new Check<UserGroup>("ADMINISTRATORS", getUserGroup(userModel.getObject(), ADMINISTRATORS)));
-        usergroups.add(new Check<UserGroup>("EMPLOYEES", getUserGroup(userModel.getObject(), EMPLOYEES)));
+        usergroups.add(new Check<>("ADMINISTRATORS", getUserGroup(userModel.getObject(), ADMINISTRATORS)));
+        usergroups.add(new Check<>("EMPLOYEES", getUserGroup(userModel.getObject(), EMPLOYEES)));
+        usergroups.add(new Check<>("EMPLOYEES_CHILD_VIEW", getUserGroup(userModel.getObject(), EMPLOYEES_CHILD_VIEW)));
 
         form.add(usergroups);
 

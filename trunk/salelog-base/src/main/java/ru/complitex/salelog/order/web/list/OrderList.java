@@ -200,7 +200,7 @@ public class OrderList extends TemplatePage {
 
                     @Override
                     public String getObject() {
-                        return getString("edit");
+                        return isOrderEditor()? getString("edit"): getString("view");
                     }
                 }));
                 item.add(detailsLink);
@@ -338,10 +338,15 @@ public class OrderList extends TemplatePage {
         });
         add(createPanel);
 
-        if (!getTemplateWebApplication().hasAnyRole(org.complitex.template.web.security.SecurityRole.ADMIN_MODULE_EDIT)) {
+        if (!getTemplateWebApplication().hasAnyRole(org.complitex.template.web.security.SecurityRole.ADMIN_MODULE_EDIT) &&
+                isOrderEditor()) {
             createPanel.open(null, null);
         }
 
+    }
+
+    private boolean isOrderEditor() {
+        return getTemplateWebApplication().hasAnyRole(SecurityRole.ORDER_EDIT);
     }
 
     private Order getFilterObject() {
@@ -353,13 +358,13 @@ public class OrderList extends TemplatePage {
 
     @Override
     protected List<? extends ToolbarButton> getToolbarButtons(String id) {
-        return ImmutableList.of(new AddItemButton(id, true) {
+        return isOrderEditor() ? ImmutableList.of(new AddItemButton(id, true) {
 
             @Override
             protected void onClick(AjaxRequestTarget target) {
                 createPanel.open(target, null);
             }
-        });
+        }) : super.getToolbarButtons(id);
     }
 
     private PageParameters getEditPageParams(Long id) {

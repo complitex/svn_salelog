@@ -7,6 +7,7 @@
         <role-name>AUTHORIZED</role-name>
         <group-name>ADMINISTRATORS</group-name>
         <group-name>EMPLOYEES</group-name>
+        <group-name>EMPLOYEES_CHILD_VIEW</group-name>
     </security-role-mapping>
     <security-role-mapping>
         <role-name>INFO_PANEL_ALLOWED</role-name>
@@ -19,6 +20,7 @@
     <security-role-mapping>
         <role-name>ADDRESS_MODULE_VIEW</role-name>
         <group-name>EMPLOYEES</group-name>
+        <group-name>EMPLOYEES_CHILD_VIEW</group-name>
         <group-name>ADMINISTRATORS</group-name>
     </security-role-mapping>
     <security-role-mapping>
@@ -52,6 +54,7 @@
         <role-name>ORDER_VIEW</role-name>
         <group-name>ADMINISTRATORS</group-name>
         <group-name>EMPLOYEES</group-name>
+        <group-name>EMPLOYEES_CHILD_VIEW</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
