@@ -2,6 +2,7 @@ package ru.complitex.salelog.order.web.edit;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -30,7 +31,9 @@ import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.entity.Person;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
+import org.complitex.dictionary.web.component.ChildrenContainer;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.template.web.template.TemplateWebApplication;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +52,7 @@ import ru.complitex.salelog.web.component.NumberTextField;
 import ru.complitex.salelog.web.security.SecurityRole;
 
 import javax.ejb.EJB;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -56,7 +60,7 @@ import java.util.*;
 /**
  * @author Pavel Sknar
  */
-@AuthorizeInstantiation(SecurityRole.ORDER_EDIT)
+@AuthorizeInstantiation(SecurityRole.ORDER_VIEW)
 public class OrderEditPanel extends Panel {
 
     private static final Logger log = LoggerFactory.getLogger(OrderEditPanel.class);
@@ -109,7 +113,7 @@ public class OrderEditPanel extends Panel {
         dialog.setModal(true);
         dialog.setMinHeight(100);
         dialog.setTitle(title);
-        dialog.setAutoOpen(true);
+        dialog.setAutoOpen(!isAdmin() && isOrderEditor());
         add(dialog);
 
         init();
@@ -130,6 +134,7 @@ public class OrderEditPanel extends Panel {
         content.add(messages);
 
         final Form form = new Form("form");
+        form.setEnabled(isOrderEditor());
         content.add(form);
 
         // call girl`s code
@@ -372,6 +377,11 @@ public class OrderEditPanel extends Panel {
         container.setVisible(true);
         form.add(container);
 
+        WebMarkupContainer addSale = new WebMarkupContainer("addSale");
+        addSale.setOutputMarkupPlaceholderTag(true);
+        addSale.setVisible(isOrderEditor());
+        container.add(addSale);
+
         final AutoCompleteTextField<Product> productField = new AutoCompleteTextField<Product>("product"
                 , Product.class
                 , new AbstractAutoCompleteTextRenderer<Product>() {
@@ -420,7 +430,8 @@ public class OrderEditPanel extends Panel {
                 };
             }
         };
-        container.add(productField);
+        productField.setVisible(isOrderEditor());
+        addSale.add(productField);
 
         final NumberTextField<Integer> countField = new NumberTextField<Integer>("count") {
             @SuppressWarnings("unchecked")
@@ -432,8 +443,8 @@ public class OrderEditPanel extends Panel {
         };
         countField.setMinimum(1);
         countField.setMaximum(Integer.MAX_VALUE);
-        countField.setRequired(true);
-        container.add(countField);
+        countField.setVisible(isOrderEditor());
+        addSale.add(countField);
 
         productSaleButtonLabel = new Model<>(getString("add"));
 
@@ -453,9 +464,9 @@ public class OrderEditPanel extends Panel {
             }
         };
         cancelProductSaleButton.setVisible(false);
-        container.add(cancelProductSaleButton);
+        addSale.add(cancelProductSaleButton);
         
-        container.add(new AjaxButton("addProductSaleButton", productSaleButtonLabel) {
+        addSale.add(new AjaxButton("addProductSaleButton", productSaleButtonLabel) {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
@@ -498,10 +509,12 @@ public class OrderEditPanel extends Panel {
                     } else {
                         order.getProductSales().add(sale);
                     }
+                } else {
+                    form.process(null);
                 }
                 target.add(container);
             }
-        }.setDefaultFormProcessing(false));
+        }.setDefaultFormProcessing(false).setVisible(isOrderEditor()));
 
         //Data Provider
         final DataProvider<ProductSale> dataProvider = new DataProvider<ProductSale>() {
@@ -731,6 +744,7 @@ public class OrderEditPanel extends Panel {
                 target.add(content);
             }
         };
+        save.setVisible(isOrderEditor());
         form.add(save);
 
         // cancel button
@@ -743,10 +757,22 @@ public class OrderEditPanel extends Panel {
                 form.clearInput();
                 form.process(null);
 
+                if (isOrderEditor()) {
+                    productField.setEnabled(true);
+                }
+
                 dialog.close(target);
             }
         };
+        cancel.setVisible(isOrderEditor());
         form.add(cancel);
+        dialog.add(new AjaxLink<String>("back") {
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                dialog.close(target);
+            }
+        }.setVisible(!isOrderEditor()));
     }
 
     private void initData(Long orderId) {
@@ -776,6 +802,9 @@ public class OrderEditPanel extends Panel {
     public void open(AjaxRequestTarget target, Long orderId) {
         if (target != null) {
             initData(orderId);
+
+
+
             target.add(content);
 
             target.add(container);
@@ -786,8 +815,15 @@ public class OrderEditPanel extends Panel {
         }
     }
 
-    public interface CallBack {
+    public interface CallBack extends Serializable {
         void update(AjaxRequestTarget target);
     }
 
+    private boolean isOrderEditor() {
+        return ((TemplateWebApplication) getApplication()).hasAnyRole(SecurityRole.ORDER_EDIT);
+    }
+
+    private boolean isAdmin() {
+        return ((TemplateWebApplication) getApplication()).hasAnyRole(org.complitex.template.web.security.SecurityRole.ADMIN_MODULE_EDIT);
+    }
 }

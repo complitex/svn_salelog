@@ -114,7 +114,7 @@ public class UserList extends ScrollListPage {
         filterForm.add(new AttributeFiltersPanel("user_info", filter.getAttributeExamples()));
         filterForm.add(new DropDownChoice<>("usergroups",
                 new PropertyModel<UserGroup.GROUP_NAME>(filterModel, "groupName"),
-                new ListModel<>(Arrays.asList(UserGroup.GROUP_NAME.ADMINISTRATORS, UserGroup.GROUP_NAME.EMPLOYEES)),
+                new ListModel<>(Arrays.asList(UserGroup.GROUP_NAME.values())),
                 new IChoiceRenderer<UserGroup.GROUP_NAME>() {
 
                     @Override
