@@ -477,7 +477,10 @@ public class OrderEditPanel extends Panel {
 
                 ProductSale sale = saleModel.getObject();
 
-                if (sale.getProduct() == null) {
+                Product oldProduct = sale.getProduct();
+                Integer oldCount = sale.getCount();
+
+                if (productField.isEnabled()) {
                     productField.validate();
                     productField.updateModel();
                     edit = false;
@@ -488,11 +491,12 @@ public class OrderEditPanel extends Panel {
 
 
                 if (sale.getProduct() == null) {
+                    sale.setProduct(oldProduct);
                     hasErrors = true;
                 }
                 if (sale.getCount() == null) {
                     hasErrors = true;
-                    sale.setCount(1);
+                    sale.setCount(oldCount);
                 }
                 if (!hasErrors) {
                     if (sale.getPrice() == null || sale.getPrice().doubleValue() <= 0) {
@@ -502,6 +506,9 @@ public class OrderEditPanel extends Panel {
 
                     saleModel.setObject(new ProductSale(1));
                     productSaleButtonLabel.setObject(getString("add"));
+
+                    countField.clearInput();
+                    productField.clearInput();
 
                     if (edit) {
                         productField.setEnabled(true);
