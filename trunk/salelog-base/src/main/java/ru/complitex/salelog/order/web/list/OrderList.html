@@ -81,8 +81,11 @@
                 <tr>
                     <td class="filter-td"></td>
                     <td class="filter-td">
-                        <div style="width:102px">
-                            <input type="text" wicket:id="createDate" style="width: 80px"/>
+                        <div style="width:122px">
+                            <wicket:message key="from"/>&nbsp;<input type="text" wicket:id="createDateFrom" style="width: 80px"/>
+                        </div>
+                        <div style="width:122px">
+                            <wicket:message key="to"/>&nbsp;<input type="text" wicket:id="createDateTo" style="width: 80px"/>
                         </div>
                     </td>
                     <td class="filter-td">
@@ -106,7 +109,9 @@
                     <td class="filter-td">
                         <select wicket:id="status"/>
                     </td>
-                    <td class="filter-td"></td>
+                    <td class="filter-td">
+                        <input type="text" wicket:id="productCode"></input>
+                    </td>
                     <td class="filter-td"></td>
                     <td class="filter-td"></td>
                     <td class="filter-td"></td>
@@ -157,10 +162,10 @@
                     </td>
                     <td>
                         <table>
-                            <div wicket:id="priceView">
+                            <div wicket:id="countView">
                                 <tr>
                                     <td>
-                                        <span wicket:id="price"></span>
+                                        <span wicket:id="count"></span>
                                     </td>
                                 </tr>
                             </div>
@@ -168,10 +173,10 @@
                     </td>
                     <td>
                         <table>
-                            <div wicket:id="countView">
+                            <div wicket:id="priceView">
                                 <tr>
                                     <td>
-                                        <span wicket:id="count"></span>
+                                        <span wicket:id="price"></span>
                                     </td>
                                 </tr>
                             </div>
