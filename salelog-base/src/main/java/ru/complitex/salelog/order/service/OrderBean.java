@@ -13,6 +13,7 @@ import ru.complitex.salelog.order.entity.ProductSale;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -66,13 +67,13 @@ public class OrderBean extends AbstractBean {
         return order;
     }
 
-    public List<Order> getOrders(FilterWrapper<Order> filter) {
+    public List<Order> getOrders(FilterWrapper<OrderExt> filter) {
         List<Order> orders = sqlSession().selectList(NS + ".selectOrders", filter);
         removeExcess(orders);
         return orders;
     }
 
-    public int count(FilterWrapper<Order> filter) {
+    public int count(FilterWrapper<OrderExt> filter) {
         return sqlSession().selectOne(NS + ".countOrders", filter);
     }
 
@@ -139,6 +140,36 @@ public class OrderBean extends AbstractBean {
             object.setEndDate(DateUtil.getCurrentDate());
         }
         sqlSession().update(NS + ".updateProductSaleEndDate", object);
+    }
+
+    public static class OrderExt extends Order {
+        private Date createDateFrom;
+        private Date createDateTo;
+        private String productCode;
+
+        public Date getCreateDateFrom() {
+            return createDateFrom;
+        }
+
+        public void setCreateDateFrom(Date createDateFrom) {
+            this.createDateFrom = createDateFrom;
+        }
+
+        public Date getCreateDateTo() {
+            return createDateTo;
+        }
+
+        public void setCreateDateTo(Date createDateTo) {
+            this.createDateTo = createDateTo;
+        }
+
+        public String getProductCode() {
+            return productCode;
+        }
+
+        public void setProductCode(String productCode) {
+            this.productCode = productCode;
+        }
     }
 }
 

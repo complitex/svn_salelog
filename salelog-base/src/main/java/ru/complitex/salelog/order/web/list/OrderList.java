@@ -47,6 +47,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.complitex.dictionary.util.PageUtil.newSorting;
+import static ru.complitex.salelog.order.service.OrderBean.OrderExt;
 
 /**
  * @author Pavel Sknar
@@ -78,7 +79,7 @@ public class OrderList extends TemplatePage {
     
     private void init() {
 
-        final IModel<Order> filterModel = new CompoundPropertyModel<>(getFilterObject());
+        final IModel<OrderExt> filterModel = new CompoundPropertyModel<>(getFilterObject());
 
         IModel<String> labelModel = new ResourceModel("label");
 
@@ -95,7 +96,7 @@ public class OrderList extends TemplatePage {
         container.add(messages);
 
         //Form
-        final Form<Order> filterForm = new Form<>("filterForm", filterModel);
+        final Form<OrderExt> filterForm = new Form<>("filterForm", filterModel);
         container.add(filterForm);
 
         //Data Provider
@@ -103,7 +104,7 @@ public class OrderList extends TemplatePage {
 
             @Override
             protected Iterable<? extends Order> getData(int first, int count) {
-                FilterWrapper<Order> filterWrapper = FilterWrapper.of(filterModel.getObject(), first, count);
+                FilterWrapper<OrderExt> filterWrapper = FilterWrapper.of(filterModel.getObject(), first, count);
                 filterWrapper.setAscending(getSort().isAscending());
                 filterWrapper.setSortProperty(getSort().getProperty());
                 filterWrapper.setLike(true);
@@ -113,7 +114,7 @@ public class OrderList extends TemplatePage {
 
             @Override
             protected int getSize() {
-                FilterWrapper<Order> filterWrapper = FilterWrapper.of(filterModel.getObject());
+                FilterWrapper<OrderExt> filterWrapper = FilterWrapper.of(filterModel.getObject());
                 filterWrapper.setLike(true);
 
                 return orderBean.count(filterWrapper);
@@ -214,7 +215,8 @@ public class OrderList extends TemplatePage {
                 "order_address", "order_comment", "order_status_code"));
 
         //Filters
-        filterForm.add(new DatePicker<Date>("createDate"));
+        filterForm.add(new DatePicker<Date>("createDateFrom"));
+        filterForm.add(new DatePicker<Date>("createDateTo"));
 
         filterForm.add(new TextField<>("callGirlCode", new IModel<String>() {
             @Override
@@ -299,6 +301,8 @@ public class OrderList extends TemplatePage {
                 }
         ));
 
+        filterForm.add(new TextField<>("productCode"));
+
         //Reset Action
         AjaxLink reset = new AjaxLink("reset") {
 
@@ -349,8 +353,8 @@ public class OrderList extends TemplatePage {
         return getTemplateWebApplication().hasAnyRole(SecurityRole.ORDER_EDIT);
     }
 
-    private Order getFilterObject() {
-        Order filterObject = new Order();
+    private OrderExt getFilterObject() {
+        OrderExt filterObject = new OrderExt();
         filterObject.setCallGirl(new CallGirl());
         filterObject.setCustomer(new Person());
         return filterObject;

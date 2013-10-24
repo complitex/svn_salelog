@@ -56,9 +56,19 @@
                 and o.`object_id` = #{object.id}
             </if>
 
-            <if test="object.createDate != null">
-                and date(o.`create_date`) = #{object.createDate}
-            </if>
+            <choose>
+                <when test="object.createDate">
+                    and date(o.`create_date`) = #{object.createDate}
+                </when>
+                <otherwise>
+                    <if test="object.createDateFrom">
+                        and date(o.`create_date`) >= #{object.createDateFrom}
+                    </if>
+                    <if test="object.createDateTo">
+                        and #{object.createDateTo} >= date(o.`create_date`)
+                    </if>
+                </otherwise>
+            </choose>
 
             <if test="object.customer != null">
                 <if test="object.customer.lastName != null">
@@ -114,6 +124,9 @@
                     </if>
                 </if>
             </if>
+            <if test="object.productCode != null">
+                and p.`code` like concat('%', #{object.productCode}, '%')
+            </if>
         </if>
     </sql>
 
@@ -126,6 +139,10 @@
 
         from `order` o
         left join `call_girl` cg on o.`call_girl_id` = cg.`id`
+        <if test="object.productCode != null">
+            left join `product_sale` ps on o.`object_id` = ps.`order_id` and ps.`end_date` is null
+            left join `product` p on ps.`product_id` = p.`id`
+        </if>
 
         where o.`end_date` is null
         <include refid="orderCondition"/>
@@ -176,6 +193,10 @@
     <select id="countOrders" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="integer">
         select count(distinct o.`object_id`) from `order` o
         left join `call_girl` cg on o.`call_girl_id` = cg.`id`
+        <if test="object.productCode != null">
+            left join `product_sale` ps on o.`object_id` = ps.`order_id` and ps.`end_date` is null
+            left join `product` p on ps.`product_id` = p.`id`
+        </if>
         where o.`end_date` is null
         <include refid="orderCondition"/>
     </select>
