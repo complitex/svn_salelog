@@ -2,7 +2,9 @@ package ru.complitex.salelog.order.web.edit;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -13,6 +15,8 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSe
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.feedback.ComponentFeedbackMessageFilter;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
@@ -22,9 +26,11 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.*;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.convert.converter.IntegerConverter;
 import org.apache.wicket.util.string.Strings;
+import org.apache.wicket.util.value.IValueMap;
 import org.complitex.address.strategy.region.RegionStrategy;
 import org.complitex.dictionary.converter.BigDecimalConverter;
 import org.complitex.dictionary.entity.DomainObject;
@@ -33,7 +39,9 @@ import org.complitex.dictionary.entity.Person;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.web.component.ChildrenContainer;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.resources.WebCommonResourceInitializer;
 import org.complitex.template.web.template.TemplateWebApplication;
+import org.odlabs.wiquery.core.resources.CoreJavaScriptResourceReference;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,13 +57,16 @@ import ru.complitex.salelog.service.ProductBean;
 import ru.complitex.salelog.util.HistoryUtils;
 import ru.complitex.salelog.web.component.LabelHistory;
 import ru.complitex.salelog.web.component.NumberTextField;
+import ru.complitex.salelog.web.resources.WebSalelogResourceInitializer;
 import ru.complitex.salelog.web.security.SecurityRole;
 
 import javax.ejb.EJB;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * @author Pavel Sknar
@@ -71,6 +82,10 @@ public class OrderEditPanel extends Panel {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
+    private static final String PHONES_DELIMITER = ",";
+
+    private static final String PHONE_MASK = "\\([0-9]{3}+\\)[0-9]{3}+\\-[0-9]{2}+\\-[0-9]{2}+";
+
     @EJB
     private OrderBean orderBean;
 
@@ -84,6 +99,8 @@ public class OrderEditPanel extends Panel {
     private RegionStrategy regionStrategy;
 
     private Order order;
+
+    private String[] phones = new String[4];
 
     private List<Order> history = Lists.newArrayList();
 
@@ -119,15 +136,21 @@ public class OrderEditPanel extends Panel {
         init();
     }
 
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.renderJavaScriptReference(
+                new PackageResourceReference(OrderEditPanel.class, "jquery.meio.mask.js"));
+    }
+
     private void init() {
-        order = new Order();
-        order.setCallGirl(new CallGirl());
-        order.setStatus(OrderStatus.EMPTY);
-        order.setCustomer(new Person());
+        initOrder(null);
 
         content = new WebMarkupContainer("content");
         content.setOutputMarkupId(true);
         dialog.add(content);
+
+        content.add(new OrderEditPanelBehavior());
 
         final FeedbackPanel messages = new FeedbackPanel("messages");
         messages.setOutputMarkupId(true);
@@ -254,22 +277,10 @@ public class OrderEditPanel extends Panel {
         }));
 
         // phones
-        form.add(new TextField<>("phones", new IModel<String>() {
-            @Override
-            public String getObject() {
-                return order.getPhones();
-            }
-
-            @Override
-            public void setObject(String object) {
-                order.setPhones(object);
-            }
-
-            @Override
-            public void detach() {
-            }
-
-        }).setRequired(true));
+        form.add(new PhoneField("phone0", 0));
+        form.add(new PhoneField("phone1", 1));
+        form.add(new PhoneField("phone2", 2));
+        form.add(new PhoneField("phone3", 3));
 
         // address
         form.add(new TextField<>("address", new IModel<String>() {
@@ -732,6 +743,27 @@ public class OrderEditPanel extends Panel {
                     return;
                 }
 
+                StringBuilder phonesBuilder = new StringBuilder();
+                for (String phone : phones) {
+                    if (StringUtils.isNotEmpty(phone)) {
+                        if (!Pattern.matches(PHONE_MASK, phone)) {
+                            content.error(MessageFormat.format(getString("error_phone_mask"), phone));
+                            target.add(content);
+                            return;
+                        }
+                        if (phonesBuilder.length() > 0) {
+                            phonesBuilder.append(PHONES_DELIMITER);
+                        }
+                        phonesBuilder.append(phone);
+                    }
+                }
+                if (phonesBuilder.length() <= 0) {
+                    content.error(getString("error_phone_required"));
+                    target.add(content);
+                    return;
+                }
+
+                order.setPhones(phonesBuilder.toString());
                 orderBean.save(order);
 
                 initData(null);
@@ -782,7 +814,7 @@ public class OrderEditPanel extends Panel {
         }.setVisible(!isOrderEditor()));
     }
 
-    private void initData(Long orderId) {
+    private void initOrder(Long orderId) {
         if (orderId != null) {
             history = orderBean.getOrder(orderId);
             if (history.size() <= 0) {
@@ -796,6 +828,24 @@ public class OrderEditPanel extends Panel {
             order.setCustomer(new Person());
             history.clear();
         }
+
+        String sourcePhones = order.getPhones();
+        String[] distPhones = null;
+        if (sourcePhones != null) {
+            distPhones = sourcePhones.split(PHONES_DELIMITER, 5);
+        }
+        for (int idx = 0; idx < phones.length; idx++) {
+            if (distPhones != null && distPhones.length > idx) {
+                phones[idx] = distPhones[idx];
+            } else {
+                phones[idx] = null;
+            }
+        }
+    }
+
+    private void initData(Long orderId) {
+        initOrder(orderId);
+
         productSaleButtonLabel.setObject(getString("add"));
         saleModel.setObject(new ProductSale(1));
         try {
@@ -832,5 +882,53 @@ public class OrderEditPanel extends Panel {
 
     private boolean isAdmin() {
         return ((TemplateWebApplication) getApplication()).hasAnyRole(org.complitex.template.web.security.SecurityRole.ADMIN_MODULE_EDIT);
+    }
+
+    private class OrderEditPanelBehavior extends AbstractDefaultAjaxBehavior {
+        @Override
+        public void renderHead(Component component, IHeaderResponse response) {
+            super.renderHead(component, response);
+
+            response.renderOnDomReadyJavaScript("$(function() {\n" +
+                    "$.mask.masks.phone = {mask: '(999)999-99-99'};\n" +
+                    "$('input[type=\"text\"]').setMask();\n" +
+                    "});");
+            //response.renderOnDomReadyJavaScript("$(function(){\n" +
+            //        "    $(\"#phonesId2\").mask(\"(999)999-99-99\");\n" +
+            //        "});");
+        }
+
+        @Override
+        protected void respond(AjaxRequestTarget target) {
+
+        }
+    }
+
+    private class PhoneField extends TextField<String> {
+
+        public PhoneField(final String id, final int idx) {
+            super(id, new IModel<String>() {
+                @Override
+                public String getObject() {
+                    return phones[idx];
+                }
+
+                @Override
+                public void setObject(String object) {
+                    phones[idx] = object;
+                }
+
+                @Override
+                public void detach() {
+                }
+            });
+        }
+
+        @Override
+        protected void onComponentTag(ComponentTag tag) {
+            super.onComponentTag(tag);
+            IValueMap attributes = tag.getAttributes();
+            attributes.put("alt", "phone");
+        }
     }
 }
