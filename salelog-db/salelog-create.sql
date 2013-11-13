@@ -16,7 +16,7 @@ CREATE TABLE `call_girl` (
   `last_name` VARCHAR(255),
   `middle_name` VARCHAR(255),
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Product --
 DROP TABLE IF EXISTS `product`;
@@ -26,7 +26,7 @@ CREATE TABLE `product` (
   `name` VARCHAR(200),
   `price` decimal(19,2),
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Order status --
 DROP TABLE IF EXISTS `order_status`;
@@ -35,7 +35,7 @@ CREATE TABLE `order_status` (
   `code` BIGINT(20) NOT NULL UNIQUE KEY,
   `name` VARCHAR(255),
   PRIMARY KEY (`pk_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Order --
 DROP TABLE IF EXISTS `order`;
@@ -62,7 +62,7 @@ CREATE TABLE `order` (
   KEY `key_end_date` (`end_date`),
   CONSTRAINT `fk_order__call_girl` FOREIGN KEY (`call_girl_id`) REFERENCES `call_girl` (`id`),
   CONSTRAINT `fk_order__order_status_code` FOREIGN KEY (`order_status_code`) REFERENCES `order_status` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Collection Product Sale --
 DROP TABLE IF EXISTS `product_sale`;
@@ -83,7 +83,7 @@ CREATE TABLE `product_sale` (
   KEY `key_end_date` (`end_date`),
   CONSTRAINT `fk_product_sale__order` FOREIGN KEY (`order_id`) REFERENCES `order` (`object_id`),
   CONSTRAINT `fk_product_sale__product_id` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
