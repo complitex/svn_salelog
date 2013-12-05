@@ -40,7 +40,7 @@ public class ProductEdit extends FormTemplatePage {
     @EJB
     private ProductBean productBean;
 
-    private static final Logger log = LoggerFactory.getLogger(ProductEdit.class);
+    private final Logger log = LoggerFactory.getLogger(ProductEdit.class);
 
     private Product product;
 

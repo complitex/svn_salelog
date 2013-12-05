@@ -74,7 +74,7 @@ import java.util.regex.Pattern;
 @AuthorizeInstantiation(SecurityRole.ORDER_VIEW)
 public class OrderEditPanel extends Panel {
 
-    private static final Logger log = LoggerFactory.getLogger(OrderEditPanel.class);
+    private final Logger log = LoggerFactory.getLogger(OrderEditPanel.class);
 
     private static final BigDecimalConverter BIG_DECIMAL_CONVERTER = new BigDecimalConverter(2);
 

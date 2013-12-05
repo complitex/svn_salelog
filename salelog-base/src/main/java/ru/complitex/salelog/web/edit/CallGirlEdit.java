@@ -34,7 +34,7 @@ public class CallGirlEdit extends FormTemplatePage {
     @EJB
     private CallGirlBean callGirlBean;
 
-    private static final Logger log = LoggerFactory.getLogger(CallGirlEdit.class);
+    private final Logger log = LoggerFactory.getLogger(CallGirlEdit.class);
 
     private CallGirl callGirl;
 
