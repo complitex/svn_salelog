@@ -17,8 +17,6 @@ import org.apache.wicket.util.string.StringValue;
 import org.complitex.dictionary.converter.BigDecimalConverter;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.template.web.template.FormTemplatePage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.complitex.salelog.entity.Product;
 import ru.complitex.salelog.service.ProductBean;
 import ru.complitex.salelog.web.component.NumberTextField;
@@ -39,8 +37,6 @@ public class ProductEdit extends FormTemplatePage {
 
     @EJB
     private ProductBean productBean;
-
-    private final Logger log = LoggerFactory.getLogger(ProductEdit.class);
 
     private Product product;
 

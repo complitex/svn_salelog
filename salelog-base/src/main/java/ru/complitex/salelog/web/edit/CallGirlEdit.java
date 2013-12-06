@@ -14,8 +14,6 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.template.web.template.FormTemplatePage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.complitex.salelog.entity.CallGirl;
 import ru.complitex.salelog.service.CallGirlBean;
 import ru.complitex.salelog.web.list.CallGirlList;
@@ -34,7 +32,6 @@ public class CallGirlEdit extends FormTemplatePage {
     @EJB
     private CallGirlBean callGirlBean;
 
-    private final Logger log = LoggerFactory.getLogger(CallGirlEdit.class);
 
     private CallGirl callGirl;
 

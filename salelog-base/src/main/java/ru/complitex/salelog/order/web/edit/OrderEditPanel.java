@@ -45,7 +45,6 @@ import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.template.web.template.TemplateWebApplication;
 import org.odlabs.wiquery.ui.dialog.Dialog;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.salelog.entity.CallGirl;
 import ru.complitex.salelog.entity.Product;
@@ -73,8 +72,6 @@ import java.util.regex.Pattern;
  */
 @AuthorizeInstantiation(SecurityRole.ORDER_VIEW)
 public class OrderEditPanel extends Panel {
-
-    private final Logger log = LoggerFactory.getLogger(OrderEditPanel.class);
 
     private static final BigDecimalConverter BIG_DECIMAL_CONVERTER = new BigDecimalConverter(2);
 
@@ -642,7 +639,7 @@ public class OrderEditPanel extends Panel {
         try {
             changed.putAll(HistoryUtils.getChangedFields(order, history));
         } catch (Exception e) {
-            log.warn("Can get changed fields", e);
+            LoggerFactory.getLogger(getClass()).warn("Can get changed fields", e);
         }
 
         //Data View
@@ -852,7 +849,7 @@ public class OrderEditPanel extends Panel {
             changed.clear();
             changed.putAll(HistoryUtils.getChangedFields(order, history));
         } catch (Exception e) {
-            log.warn("Can get changed fields", e);
+            LoggerFactory.getLogger(getClass()).warn("Can get changed fields", e);
         }
     }
 

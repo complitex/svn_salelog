@@ -26,7 +26,6 @@ import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.template.web.component.LocalePicker;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
@@ -35,9 +34,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import static org.complitex.dictionary.entity.UserGroup.GROUP_NAME.ADMINISTRATORS;
-import static org.complitex.dictionary.entity.UserGroup.GROUP_NAME.EMPLOYEES;
-import static org.complitex.dictionary.entity.UserGroup.GROUP_NAME.EMPLOYEES_CHILD_VIEW;
+import static org.complitex.dictionary.entity.UserGroup.GROUP_NAME.*;
 import static org.complitex.dictionary.web.DictionaryFwSession.*;
 
 /**
@@ -49,7 +46,6 @@ import static org.complitex.dictionary.web.DictionaryFwSession.*;
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class UserEdit extends FormTemplatePage {
 
-    private final Logger log = LoggerFactory.getLogger(UserEdit.class);
     @EJB
     private UserBean userBean;
     @EJB
@@ -176,14 +172,14 @@ public class UserEdit extends FormTemplatePage {
                         logBean.info(Module.NAME, UserEdit.class, User.class, null, user.getId(),
                                 (user.getId() == null) ? Log.EVENT.CREATE : Log.EVENT.EDIT, getLogChanges(oldUser, user), null);
 
-                        log.info("Пользователь сохранен: {}", user);
+                        LoggerFactory.getLogger(getClass()).info("Пользователь сохранен: {}", user);
                         getSession().info(getString("info.saved"));
                         back(user.getId());
                     } else {
                         target.add(messages);
                     }
                 } catch (Exception e) {
-                    log.error("Ошибка сохранения пользователя", e);
+                    LoggerFactory.getLogger(getClass()).error("Ошибка сохранения пользователя", e);
                     error(getString("error.saved"));
                     target.add(messages);
                 }
