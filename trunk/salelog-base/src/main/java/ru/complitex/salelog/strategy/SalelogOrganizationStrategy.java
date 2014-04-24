@@ -12,8 +12,4 @@ import javax.ejb.Stateless;
 public class SalelogOrganizationStrategy extends AbstractOrganizationStrategy {
     public final static Long MODULE_ID = 10L;
 
-    @Override
-    public Long getModuleId() {
-        return MODULE_ID;
-    }
 }

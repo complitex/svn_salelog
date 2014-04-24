@@ -81,7 +81,7 @@ public class ProductList extends TemplatePage {
         final DataProvider<Product> dataProvider = new DataProvider<Product>() {
 
             @Override
-            protected Iterable<? extends Product> getData(int first, int count) {
+            protected Iterable<? extends Product> getData(long first, long count) {
                 FilterWrapper<Product> filterWrapper = FilterWrapper.of(filterModel.getObject(), first, count);
                 filterWrapper.setAscending(getSort().isAscending());
                 filterWrapper.setSortProperty(getSort().getProperty());
