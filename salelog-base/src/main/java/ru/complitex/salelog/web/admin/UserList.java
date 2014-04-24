@@ -110,9 +110,9 @@ public class UserList extends ScrollListPage {
             }
         });
 
-        filterForm.add(new TextField<>("login", new PropertyModel<String>(filterModel, "login")));
+        filterForm.add(new TextField<String>("login", new PropertyModel<String>(filterModel, "login")));
         filterForm.add(new AttributeFiltersPanel("user_info", filter.getAttributeExamples()));
-        filterForm.add(new DropDownChoice<>("usergroups",
+        filterForm.add(new DropDownChoice<UserGroup.GROUP_NAME>("usergroups",
                 new PropertyModel<UserGroup.GROUP_NAME>(filterModel, "groupName"),
                 new ListModel<>(Arrays.asList(UserGroup.GROUP_NAME.values())),
                 new IChoiceRenderer<UserGroup.GROUP_NAME>() {
@@ -131,7 +131,7 @@ public class UserList extends ScrollListPage {
         final DataProvider<User> dataProvider = new DataProvider<User>() {
 
             @Override
-            protected Iterable<? extends User> getData(int first, int count) {
+            protected Iterable<? extends User> getData(long first, long count) {
                 final UserFilter filter = filterModel.getObject();
 
                 //store preference, but before clear data order related properties.

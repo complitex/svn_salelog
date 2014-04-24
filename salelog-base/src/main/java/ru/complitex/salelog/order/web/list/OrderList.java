@@ -103,7 +103,7 @@ public class OrderList extends TemplatePage {
         final DataProvider<Order> dataProvider = new DataProvider<Order>() {
 
             @Override
-            protected Iterable<? extends Order> getData(int first, int count) {
+            protected Iterable<? extends Order> getData(long first, long count) {
                 FilterWrapper<OrderExt> filterWrapper = FilterWrapper.of(filterModel.getObject(), first, count);
                 filterWrapper.setAscending(getSort().isAscending());
                 filterWrapper.setSortProperty(getSort().getProperty());
@@ -143,7 +143,7 @@ public class OrderList extends TemplatePage {
                 final DataProvider<ProductSale> dataProvider = new DataProvider<ProductSale>() {
 
                     @Override
-                    protected Iterable<? extends ProductSale> getData(int first, int count) {
+                    protected Iterable<? extends ProductSale> getData(long first, long count) {
 
                         return order.getProductSales();
                     }
@@ -218,7 +218,7 @@ public class OrderList extends TemplatePage {
         filterForm.add(new DatePicker<Date>("createDateFrom"));
         filterForm.add(new DatePicker<Date>("createDateTo"));
 
-        filterForm.add(new TextField<>("callGirlCode", new IModel<String>() {
+        filterForm.add(new TextField<String>("callGirlCode", new IModel<String>() {
             @Override
             public String getObject() {
                 return filterModel.getObject().getCallGirl().getCode();
@@ -235,7 +235,7 @@ public class OrderList extends TemplatePage {
             }
         }));
 
-        filterForm.add(new TextField<>("customer", new PersonModel() {
+        filterForm.add(new TextField<String>("customer", new PersonModel() {
 
             @Override
             protected void setPerson(Person person) {
@@ -250,7 +250,7 @@ public class OrderList extends TemplatePage {
 
         filterForm.add(new TextField<>("phones"));
 
-        filterForm.add(new DropDownChoice<>("region",
+        filterForm.add(new DropDownChoice<DomainObject>("region",
                 new IModel<DomainObject>() {
                     @Override
                     public DomainObject getObject() {
@@ -286,7 +286,7 @@ public class OrderList extends TemplatePage {
 
         filterForm.add(new TextField<>("comment"));
 
-        filterForm.add(new DropDownChoice<>("status",
+        filterForm.add(new DropDownChoice<OrderStatus>("status",
                 Arrays.asList(OrderStatus.values()),
                 new IChoiceRenderer<OrderStatus>() {
                     @Override

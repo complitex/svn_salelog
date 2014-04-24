@@ -16,7 +16,9 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTe
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.feedback.ComponentFeedbackMessageFilter;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -135,9 +137,7 @@ public class OrderEditPanel extends Panel {
 
     @Override
     public void renderHead(IHeaderResponse response) {
-        super.renderHead(response);
-        response.renderJavaScriptReference(
-                new PackageResourceReference(OrderEditPanel.class, "jquery.meio.mask.js"));
+        response.render(JavaScriptHeaderItem.forReference(new PackageResourceReference(OrderEditPanel.class, "jquery.meio.mask.js")));
     }
 
     private void init() {
@@ -224,7 +224,7 @@ public class OrderEditPanel extends Panel {
         form.add(callGirlField);
 
         // customer FIO
-        form.add(new TextField<>("lastName", new IModel<String>() {
+        form.add(new TextField<String>("lastName", new IModel<String>() {
             @Override
             public String getObject() {
                 return order.getCustomer().getLastName();
@@ -240,7 +240,7 @@ public class OrderEditPanel extends Panel {
             }
 
         }).setRequired(true));
-        form.add(new TextField<>("firstName",  new IModel<String>() {
+        form.add(new TextField<String>("firstName",  new IModel<String>() {
             @Override
             public String getObject() {
                 return order.getCustomer().getFirstName();
@@ -256,7 +256,7 @@ public class OrderEditPanel extends Panel {
             }
 
         }).setRequired(true));
-        form.add(new TextField<>("middleName", new IModel<String>() {
+        form.add(new TextField<String>("middleName", new IModel<String>() {
             @Override
             public String getObject() {
                 return order.getCustomer().getMiddleName();
@@ -280,7 +280,7 @@ public class OrderEditPanel extends Panel {
         form.add(new PhoneField("phone3", 3));
 
         // address
-        form.add(new TextField<>("address", new IModel<String>() {
+        form.add(new TextField<String>("address", new IModel<String>() {
             @Override
             public String getObject() {
                 return order.getAddress();
@@ -298,7 +298,7 @@ public class OrderEditPanel extends Panel {
         }).setRequired(true));
 
         // region
-        form.add(new DropDownChoice<>("region",
+        form.add(new DropDownChoice<DomainObject>("region",
                 new IModel<DomainObject>() {
                     @Override
                     public DomainObject getObject() {
@@ -330,7 +330,7 @@ public class OrderEditPanel extends Panel {
         ).setRequired(true));
 
         // comment
-        form.add(new TextField<>("comment", new IModel<String>() {
+        form.add(new TextField<String>("comment", new IModel<String>() {
             @Override
             public String getObject() {
                 return order.getComment();
@@ -347,7 +347,7 @@ public class OrderEditPanel extends Panel {
 
         }));
 
-        form.add(new DropDownChoice<>("status",
+        form.add(new DropDownChoice<OrderStatus>("status",
                 new IModel<OrderStatus>() {
                     @Override
                     public OrderStatus getObject() {
@@ -535,7 +535,7 @@ public class OrderEditPanel extends Panel {
         final DataProvider<ProductSale> dataProvider = new DataProvider<ProductSale>() {
 
             @Override
-            protected Iterable<? extends ProductSale> getData(int first, int count) {
+            protected Iterable<? extends ProductSale> getData(long first, long count) {
 
                 return order.getProductSales();
             }
@@ -624,7 +624,7 @@ public class OrderEditPanel extends Panel {
         final DataProvider<Order> historyProvider = new DataProvider<Order>() {
 
             @Override
-            protected Iterable<? extends Order> getData(int first, int count) {
+            protected Iterable<? extends Order> getData(long first, long count) {
 
                 return history;
             }
@@ -672,7 +672,7 @@ public class OrderEditPanel extends Panel {
                 final DataProvider<ProductSale> dataProvider = new DataProvider<ProductSale>() {
 
                     @Override
-                    protected Iterable<? extends ProductSale> getData(int first, int count) {
+                    protected Iterable<? extends ProductSale> getData(long first, long count) {
 
                         return order.getProductSales();
                     }
@@ -886,13 +886,11 @@ public class OrderEditPanel extends Panel {
         public void renderHead(Component component, IHeaderResponse response) {
             super.renderHead(component, response);
 
-            response.renderOnDomReadyJavaScript("$(function() {\n" +
+            response.render(OnDomReadyHeaderItem.forScript(
+                    "$(function() {\n" +
                     "$.mask.masks.phone = {mask: '(999)999-99-99'};\n" +
                     "$('input[type=\"text\"]').setMask();\n" +
-                    "});");
-            //response.renderOnDomReadyJavaScript("$(function(){\n" +
-            //        "    $(\"#phonesId2\").mask(\"(999)999-99-99\");\n" +
-            //        "});");
+                    "});"));
         }
 
         @Override

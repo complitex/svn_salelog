@@ -74,7 +74,7 @@ public class CallGirlList extends TemplatePage {
         final DataProvider<CallGirl> dataProvider = new DataProvider<CallGirl>() {
 
             @Override
-            protected Iterable<? extends CallGirl> getData(int first, int count) {
+            protected Iterable<? extends CallGirl> getData(long first, long count) {
                 FilterWrapper<CallGirl> filterWrapper = FilterWrapper.of(filterModel.getObject(), first, count);
                 filterWrapper.setAscending(getSort().isAscending());
                 filterWrapper.setSortProperty(getSort().getProperty());
@@ -124,7 +124,7 @@ public class CallGirlList extends TemplatePage {
         //Filters
         filterForm.add(new TextField<>("code"));
 
-        filterForm.add(new TextField<>("person", new Model<String>() {
+        filterForm.add(new TextField<String>("person", new Model<String>() {
 
             @Override
             public String getObject() {
